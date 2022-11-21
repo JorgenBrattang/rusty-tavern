@@ -333,3 +333,8 @@ So if you followed correctly you should see this glorified message popup!
 ```
 Your app was successfully deployed.
 ```
+
+Press on **View** right below that message, to make sure it works.
+
+## Bug encountered
+For me **crispy_form** module was not found in **INSTALLED_APPS"** in settings.py, the issue for me that the **requirements.txt** didn't update when I added it. But it was a quick fix due to the error message provided.
