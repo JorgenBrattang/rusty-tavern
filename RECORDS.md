@@ -321,3 +321,15 @@ git commit -m "deployment commit"
 ```
 git push
 ```
+
+## Navigate to Heroku
+- Go to the Deploy tab and select **Deployment method** as **GitHub**
+- Search for your repository
+- I entered **rustytavern**
+- Now press Connect
+- Click on **Deploy Branch**
+
+So if you followed correctly you should see this glorified message popup!
+```
+Your app was successfully deployed.
+```
