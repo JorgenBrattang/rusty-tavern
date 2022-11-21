@@ -166,8 +166,158 @@ python3 manage.py migrate
 And open the **Settings** tab:
 Add the following config vars:
 ```
-DATABASES_URL -> And for the value add the databaseURL from ElephantSQL *(without quotations marks)*
+KEY: DATABASES_URL
+VALUE: Add the databaseURL from ElephantSQL *(without quotations marks)*
 ```
 ```
-SECRET_KEY -> And for the value add the generated Django unique code from env.py file.
+KEY: SECRET_KEY 
+VALUE: Add the generated Django unique code from env.py file.
+```
+```
+KEY: PORT
+VALUE: 8000
+```
+
+## Commit the changes that are made
+```
+git add .
+```
+```
+git commit -m "Add connection to database and its working"
+```
+```
+git push
+```
+
+# Cloudinary
+## Create an account
+Instructions provided by <a>https://codeinstitute.net/</a>
+- Visit the Cloudinary website
+- Click on the Sign Up For Free button
+- Provide your name, email address and choose a password
+- For Primary interest, you can choose Programmable Media for image and video API
+- Optional: edit your assigned cloud name to something more memorable
+- Click Create Account
+- Verify your email and you will be brought to the dashboard
+
+## Installing it to the project
+In the cloudinary Dashboard copy the **API Environment variable** by pressing on the copy icon to the right.
+
+Within the env.py file add this
+```python
+os.environ["CLOUDINARY_URL"] = "<copiedURL>"
+```
+*Your URL will start with **CLOUDINARY_URL=** remove this so it looks like this in the start
+```
+cloudinary://...
+```
+
+## Now back to Heroku
+In the **Config Vars** within settings, add this
+```
+KEY: CLOUDINARY_URL
+VALUE: <copiedURL>
+```
+*(Value most be the same as in the env.py file)*
+
+Another thing we need to add for now is
+```
+KEY: DISABLE_COLLECTSTATIC
+VALUE: 1
+```
+*(This will be removed later)*
+
+## Back to settings.py file
+in the **settings.py** file add cloudinary in this order!
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'cloudinary_storage', # <<--- This needs to be before djangos staticfiles
+    'django.contrib.staticfiles',
+    'cloudinary', # <<--- This is added as usual
+    'menu',
+    'crispy_forms',
+    'crispy_bootstrap5',
+]
+```
+
+A bit further down we need to create the static connection to cloudinary
+```python
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+STATICFILES_DIRS = [os.path.join(BASE_DIR), 'static']
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+```
+
+# Templates and folder creation
+Add our **TEMPLATES_DIR**
+```python
+BASE_DIR = Path(__file__).resolve().parent.parent
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates') # <<--- This is the one we need to add
+```
+
+Now we need to tell django where the templates directory is
+```python
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [TEMPLATES_DIR],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+
+## Tell Django about our Heroku app
+Still in the **settings.py** file
+```python
+ALLOWED_HOSTS = ['rustytavern.herokuapp.com', 'localhost']
+```
+*(your app name first, the followed by herokuapp.com)*
+
+Now we need to create these folders within our project in the top level.
+```
+media
+static
+templates
+```
+*(Spellcheck them!)*
+
+# Deployment to Heroku
+## Procfile
+Now for the push towards Heroku, we need to create a Procfile *(spelling is crucial!)*
+```
+touch Procfile
+```
+*(Notice when you create it has the Herkou logo, otherwise the spelling is incorrect)*
+
+Within that file add this
+```
+web: gunicorn rustytavern.wsgi
+```
+*(Change **rustytavern** to your app name)*
+
+## Commit the changes
+```
+git add .
+```
+```
+git commit -m "deployment commit"
+```
+```
+git push
 ```
