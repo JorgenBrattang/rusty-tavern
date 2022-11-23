@@ -338,3 +338,79 @@ Press on **View** right below that message, to make sure it works.
 
 ## Bug encountered
 For me **crispy_form** module was not found in **INSTALLED_APPS"** in settings.py, the issue for me that the **requirements.txt** didn't update when I added it. But it was a quick fix due to the error message provided.
+
+# Now lets start to build up the menu
+Navigate to the folder **menu** and open up **models.py**
+
+```python
+from django.db import models
+from django.contrib.auth.models import User # This will ensure the chef who created the dish is mentioned
+from cloudinary.models import CloudinaryField # This will show the image stored on Cloudinary
+
+STATUS = ((0, 'Draft')), ((1, 'Published')) # This does what is says it does.
+
+
+class Item(models.Model):
+    title = models.CharField(max_length=200, unique=True) # Can't have two of the same name
+    slug = models.SlugField(max_length=200, unique=True) # Slug will deprive from title later on.
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='menu_items') # This will be the chef's entry and when he/she quits all the dishes related will be deleted.
+    updated_on = models.DateTimeField(auto_now=True)
+    content = models.TextField()
+    food_image = CloudinaryField('image', default='placeholder') # Image from cloudinary, placeholder as default
+    excerpt = models.TextField(blank=True) # Short text
+    created_on = models.DateTimeField(auto_now_add=True)
+    status = models.IntegerField(choices=STATUS, default=0)
+    likes = models.ManyToManyField(User, related_name='menu_likes', blank=True)
+
+    class Meta:
+        ordering = ['-created_on'] # This may change later on, for now its the newest item first
+
+    def __str__(self):
+        return self.title # Always include this, so we can see the title instead of just default text.
+
+    def number_of_likes(self):
+        return self.likes.count() # Keeps track of likes
+```
+
+## Reviews model
+
+```python
+class Reviews(models.Model):
+    item = models.ForeignKey(
+        Item, on_delete=models.CASCADE, related_name='reviews') # Gets the food item from previous model
+    name = models.CharField(max_length=80) # Name of the person who makes it
+    email = models.EmailField() # Email adress
+    body = models.TextField() # The review it self
+    created_on = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(default=False) # Most be approved by the site owner
+
+    class Meta:
+        ordering = ['created_on']  # This may change later on, for now its the oldest item first
+
+    def __str__(self):
+        return f'Review {self.body} by {self.name}' # Returns the values for the body and name field.
+```
+
+## Migrate the changes
+Now lets migrate the changes to our database
+```
+python3 manage.py makemigrations
+```
+```
+python3 manage.py migrate
+```
+
+## Create a superuser (admin)
+```
+python3 manage.py createsuperuser
+```
+
+Now just follow the promts in the terminal
+```python
+Username (leave blank to use 'gitpod'): admin
+Email address: # This is Optional
+Password: # This will be invisable as you type it
+Password # Same goes here
+Superuser created successfully.
+```
