@@ -552,6 +552,10 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ('name', 'body', 'item', 'created_on', 'approved')
     search_fields = ['name', 'email', 'body']
     list_filter = ('approved', 'created_on')
+    actions = ['approved_reviews']
+
+    def approved_reviews(self, request, queryset):
+        queryset.update(approved=True)
 ```
 
 ## Changes to the model Reviews
