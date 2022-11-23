@@ -373,12 +373,12 @@ class Item(models.Model):
         return self.likes.count() # Keeps track of likes
 ```
 
-## Reviews model
+## Review model
 
 ```python
-class Reviews(models.Model):
+class Review(models.Model):
     item = models.ForeignKey(
-        Item, on_delete=models.CASCADE, related_name='reviews') # Gets the food item from previous model
+        Item, on_delete=models.CASCADE, related_name='review') # Gets the food item from previous model
     name = models.CharField(max_length=80) # Name of the person who makes it
     email = models.EmailField() # Email adress
     body = models.TextField() # The review it self
@@ -401,6 +401,7 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 
+# Admin panel
 ## Create a superuser (admin)
 ```
 python3 manage.py createsuperuser
@@ -413,4 +414,166 @@ Email address: # This is Optional
 Password: # This will be invisable as you type it
 Password # Same goes here
 Superuser created successfully.
+```
+
+## Forgot to commit earlier
+```
+git add .
+```
+
+```
+git commit -m "Add models for menu Items and reviews, also created superuser"
+```
+
+```
+git push
+```
+Since we don't have autodeploy on in Heroku, so that has to be manually deployed when we like that to happen.
+
+## Admin panel creation
+Navigate to the file **admin.py** within the **menu** folder
+```python
+from django.contrib import admin
+from .models import Item # Import our model to this file
+
+admin.site.register(Item) # This will make the model appear on the admin panel
+```
+
+## Access the admin panel
+To access run the server
+```
+python3 manage.py runserver
+```
+
+And CTRL + Left click on this on
+```
+http://127.0.0.1:8000/
+```
+
+On the **URL** add **/admin**
+
+You will be meet by a login page and see that our **Item** model is there, so we can now add Items.
+
+## Now we need to add Summernote
+[Summernote website](https://summernote.org/)
+```
+pip3 install django-summernote
+```
+
+Freeze our requirements.txt file
+```
+pip3 freeze --local > requirements.txt
+```
+
+Add summernote to our **INSTALLED_APPS**, so navigate to the folder **rustytavern** open up **settings.py**
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
+    'menu',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'django_summernote', # <<<--- Add this one
+]
+```
+
+Now to add this to our **urls.py** within the same folder
+```python
+from django.contrib import admin
+from django.urls import path, include # <<<--- Add this
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('summernote/', include('django_summernote.urls')), # <<<--- Add this
+]
+```
+
+Updating the **admin.py** file within the **menu** folder
+```python
+from django.contrib import admin
+from .models import Item
+from django_summernote.admin import SummernoteModelAdmin
+
+
+@admin.register(Item) # <<<--- Add this and the code below
+class ItemAdmin(SummernoteModelAdmin):
+    summernote_fields = ('content')
+
+# admin.site.register(Item) <<<--- Delete this
+```
+
+## Update the changes
+Run the migrate command
+```
+python3 manage.py migrate
+```
+
+To see the change, update the admin page of the server and you can now see when you adding a **Menu Item** you get a full featured editor.
+
+## Make life easier for creating Menu items
+Go back to the **admin.py** file within the **menu** folder.
+```python
+@admin.register(Item)
+class ItemAdmin(SummernoteModelAdmin):
+
+    prepopulated_fields = {'slug': ('title', )} # This will autogenerate a slug field from the the title, example "Hello World" = "Hello-World"
+    list_filter = ('status', 'created_on') # This will let you filter the Menu items.
+    summernote_fields = ('content')
+```
+
+## Admin panel more functionality
+[list_display documentation](https://docs.djangoproject.com/en/3.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display)<br>
+[search_field documentation](https://docs.djangoproject.com/en/3.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields)
+
+These functinality can really change the admin panel, lets add the basic onces we need for now.
+
+Within the **admin.py** file
+```python
+@admin.register(Item)
+class ItemAdmin(SummernoteModelAdmin):
+
+    prepopulated_fields = {'slug': ('title', )}
+    list_display = ('title', 'slug', 'status', 'created_on') # <<<--- Add this
+    search_fields = ['title', 'content'] # <<<--- And this
+    list_filter = ('status', 'created_on')
+    summernote_fields = ('content')
+```
+
+Now lets add one for **Review**
+```python
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('name', 'body', 'item', 'created_on', 'approved')
+    search_fields = ['name', 'email', 'body']
+    list_filter = ('approved', 'created_on')
+```
+
+## Changes to the model Reviews
+I changed the model name **Reviews** to **Review**, this is changed within this file but will add it to gitpod as a commit message as well a migrate to make the change to the database by doing the **makemigrations** command again followed by **migrate**
+```
+python3 manage.py makemigrations
+```
+
+```
+python3 manage.py migrate
+```
+
+The commit commands again.
+
+```
+git add .
+```
+
+```
+git commit -m "add functionality to admin panel, and renamed Reviews model to Review"
+```
+
+```
+git push
 ```

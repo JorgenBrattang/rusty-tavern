@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'menu',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_summernote',
 ]
 
 MIDDLEWARE = [

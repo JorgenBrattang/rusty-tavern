@@ -28,7 +28,7 @@ class Item(models.Model):
         return self.likes.count()
 
 
-class Reviews(models.Model):
+class Review(models.Model):
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, related_name='reviews')
     name = models.CharField(max_length=80)
