@@ -689,3 +689,127 @@ git commit -m "Add index and base html starting point"
 ```
 git push
 ```
+
+# Building up the site with bare minimum
+## base.html
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/b66a8a8811.js" crossorigin="anonymous"></script>
+
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Lato&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet link -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Rusty Tavern</title>
+</head>
+
+<body>
+    <!-- Main content -->
+    <main>
+        {% block content %}
+        <!-- Our content will go here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+
+    </footer>
+    <!-- Bootstrap javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
+```
+
+## index.html
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Base Code provided from Code Institute walkthrough -->
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-12">
+            <div class="row">
+                {% for item in item_list %}
+                    <div class="col-md-2">
+                        <div class="card md-2">
+                            <div class="card-body">
+                                {% if 'placeholder' in item.food_image.url %}
+                                 <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" alt="default image" class="card-img-top">
+                                 {% else %}
+                                 <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+                                 {% endif %}
+                            </div>
+                            <a href="#" class="post-link">
+                                <h2 class="card-title">{{ item.title }}</h2>
+                                <p class="card-text">{{ item.exceprt }}</p>
+                            </a>
+                            <hr />
+                            <p class="card-text text-muted h6">{{ item.created_on }}
+                                <i class="fa-solid fa-heart"></i>{{ item.number_of_likes }}
+                            </p>
+                        </div>
+                    </div>
+                {% if forloop.counter|divisiable:3 %}
+                </div>
+                <div class="row">
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; PREV </a></li>
+            {% endif %}
+            {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- End provided -->
+</div>
+
+{% endblock %}
+```
+
+## Commiting updates to index and base html
+```
+git add .
+```
+
+```
+git commit -m "Base structure to index and base html, from code institute"
+```
+
+```
+git push
+```

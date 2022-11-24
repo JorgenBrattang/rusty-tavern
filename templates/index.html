@@ -1,4 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Hello World</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                {% for item in item_list %}
+                <div class="col-md-2">
+                    <div class="card md-2">
+                        <div class="card-body">
+                            {% if 'placeholder' in item.food_image.url %}
+                            <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg"
+                                alt="default image" class="card-img-top">
+                            {% else %}
+                            <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+                            {% endif %}
+                        </div>
+                        <a href="#" class="post-link">
+                            <h2 class="card-title">{{ item.title }}</h2>
+                            <p class="card-text">{{ item.exceprt }}</p>
+                        </a>
+                        <hr />
+                        <p class="card-text text-muted h6">{{ item.created_on }}
+                            <i class="fa-solid fa-heart"></i>{{ item.number_of_likes }}
+                        </p>
+                    </div>
+                </div>
+                {% if forloop.counter|divisiable:3 %}
+            </div>
+            <div class="row">
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; PREV </a></li>
+            {% endif %}
+            {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
 {% endblock %}
