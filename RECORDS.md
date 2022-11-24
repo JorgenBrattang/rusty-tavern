@@ -581,3 +581,111 @@ git commit -m "add functionality to admin panel, and renamed Reviews model to Re
 ```
 git push
 ```
+
+## Small update, that I forgot
+```
+git add .
+```
+
+```
+git commit -m "small update actions on review to turn approved into True"
+```
+
+```
+git push
+```
+
+# Time for our visual aspect
+## Views file
+Navigate to **menu** folder and open up **views.py**
+
+[Django genereic views documentation](https://docs.djangoproject.com/en/3.2/topics/class-based-views/generic-display/)
+
+```python
+from django.shortcuts import render
+from django.views import generic
+from .models import Item
+
+class ItemList(generic.ListView):
+    model = Item
+    queryset = Item.objects.filter(status=1).order_by('-created_on')
+    template_name = 'index.html'
+    paginate_by = 6 # This is temporary will see how it turns out later on.
+```
+
+## Bootstrap in settings.py
+This needs to be in the **settings.py** file for Django to accept the template
+
+[Crispy BootStrap Documentation](https://pypi.org/project/crispy-bootstrap5/)
+
+```python
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+```
+
+## Bootstrap for html
+Create two new files within **templates** folder
+```
+base.html
+index.html
+```
+
+Open up **base.html** and get this code installed
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
+    <title>Rusty Tavern</title>
+</head>
+
+<body>
+
+    {% block content %}
+    <!-- Our content will go here -->
+    {% endblock %}
+
+    <!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
+```
+
+Open up **index.html** and get this code
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Hello World</h1>
+
+{% endblock %}
+```
+
+This is just the start of our journey, but it is a start!
+
+## Commiting the changes
+```
+git add .
+```
+
+```
+git commit -m "Add index and base html starting point"
+```
+
+```
+git push
+```
