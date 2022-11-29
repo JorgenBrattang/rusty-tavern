@@ -1,0 +1,74 @@
+{% extends 'base.html' %} {% block content %}
+<div class="masthead">
+    <div class="container">
+        <div class="row g-0">
+            <!-- Displays the title, author and created on -->
+            <div class="col-md-6 masthead-text">
+                <h1 class="post-title">{{ item.title }}</h1>
+                <p class="post-subtitle">{{ item.author }} | {{ item.created_on }}</p>
+            </div>
+            <!-- Default image if none exists -->
+            <div class="d-none d-md-block col-md-6 masthead-image">
+                {% if "placeholder" in post.featured_image.url %}
+                <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" width="100%">
+                {% else %}
+                <img src=" {{ post.food_image.url }}" width="100%">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col card mb-4 mt-3 left top">
+            <div class="card-body">
+                <!-- displays the content -->
+                <p class="card-text">
+                    {{ item.content | safe }}
+                </p>
+                <div class="row">
+                    <!-- Number of likes -->
+                    <div class="col-1">
+                        <strong class="text-secondary">
+                            {{ item.number_of_likes }}
+                        </strong>
+                    </div>
+                    <!-- Displays total reviews -->
+                    <div class="col-1">
+                        {% with reviews.count as total_reviews %}
+                        <strong class="text-secondary">
+                            {{ total_reviews}}
+                        </strong>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Displays Reviews -->
+        <div class="col-md-8 card md-4 mt-3">
+            <h3>Reviews:</h3>
+            <div class="card-body">
+                {% for review in reviews %}
+                    <div class="reviews" style="padding: 10px">
+                    <p class="font-weight-bold">
+                        {{ review.name }}
+                        <span class="text-muted font-weight-normal">
+                            {{ review.created_on }}
+                        </span> Wrote:
+                    </p>
+                    {{ review.body | linebreaks }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4 card mb-4 mt-3">
+            <div class="card-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

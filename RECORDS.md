@@ -743,62 +743,67 @@ git push
 
 ## index.html
 ```html
+<!-- Base Code provided from Code Institute walkthrough -->
 {% extends 'base.html' %}
 {% block content %}
 
-<!-- Base Code provided from Code Institute walkthrough -->
-
 <div class="container-fluid">
     <div class="row">
-
         <div class="col-12">
             <div class="row">
+                <!-- For loop for item_list -->
                 {% for item in item_list %}
-                    <div class="col-md-2">
-                        <div class="card md-2">
-                            <div class="card-body">
-                                {% if 'placeholder' in item.food_image.url %}
-                                 <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" alt="default image" class="card-img-top">
-                                 {% else %}
-                                 <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
-                                 {% endif %}
-                            </div>
-                            <a href="#" class="post-link">
-                                <h2 class="card-title">{{ item.title }}</h2>
-                                <p class="card-text">{{ item.excerpt }}</p>
-                            </a>
-                            <hr />
-                            <p class="card-text text-muted h6">{{ item.created_on }}
-                                <i class="fa-solid fa-heart"></i>{{ item.number_of_likes }}
-                            </p>
+                <div class="col-md-2">
+                    <div class="card md-2">
+                        <div class="card-body">
+                            <!-- Image place holder -->
+                            {% if 'placeholder' in item.food_image.url %}
+                            <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg"
+                                alt="default image" class="card-img-top">
+                            {% else %}
+                            <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+                            {% endif %}
                         </div>
+                        <a href="{% url 'item_detail' item.slug %}" class="post-link">
+                            <!-- Title and excerpt -->
+                            <h2 class="card-title">{{ item.title }}</h2>
+                            <p class="card-text">{{ item.excerpt }}</p>
+                        </a>
+                        <hr />
+                        <!-- Displaying created on and number of likes -->
+                        <p class="card-text text-muted h6">{{ item.created_on }}
+                            <i class="fa-solid fa-heart"></i>{{ item.number_of_likes }}
+                        </p>
                     </div>
-                {% if forloop.counter|divisibleby:3 %}
                 </div>
-                <div class="row">
+                <!-- If divisable by 3 it changes the page -->
+                {% if forloop.counter|divisibleby:3 %}
+            </div>
+            <div class="row">
                 {% endif %}
                 {% endfor %}
             </div>
         </div>
     </div>
-
+    <!-- If more then 3 pages exists paginate them -->
     {% if is_paginated %}
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
+            <!-- Goes back to the previous page -->
             {% if page_obj.has_previous %}
             <li><a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; PREV </a></li>
             {% endif %}
+            <!-- Goes forward to the next page -->
             {% if page_obj.has_next %}
             <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
             {% endif %}
         </ul>
     </nav>
     {% endif %}
-
-    <!-- End provided -->
 </div>
 
 {% endblock %}
+<!-- End provided -->
 ```
 
 ## Commiting updates to index and base html
@@ -846,3 +851,149 @@ python3 manage.py runserver
 ```
 
 If you can see the Menu Item now, good, otherwise go back and see what the issue may have been.
+
+## Commit
+```
+git add .
+```
+
+```
+git commit -m "Add so the Paths are aligned correctly"
+```
+
+```
+git push
+```
+
+# Item details views
+[Documentation Path Converters](https://docs.djangoproject.com/en/3.2/topics/http/urls/#how-django-processes-a-request)
+
+## views.py in menu folder
+```python
+from django.shortcuts import render, get_object_or_404 # <<<--- Import get_object_or_404 (later usage)
+from django.views import generic, View # <<<--- Import View
+from .models import Item
+
+
+class ItemList(generic.ListView):
+    model = Item
+    queryset = Item.objects.filter(status=1).order_by('-created_on')
+    template_name = 'index.html'
+    paginate_by = 6
+
+
+class ItemDetail(View): # <<<--- Add this code section
+    def get(self, request, slug, *args, **kwargs):
+        queryset = Item.objects.filter(status=1)
+        item = get_object_or_404(queryset, slug=slug)
+        reviews = item.reviews.filter(approved=True).order_by('created_on')
+        liked = False
+        if item.likes.filter(id=self.request.user.id).exists():
+            liked = True
+
+        return render(
+            request,
+            'item_detail.html',
+            {
+                'item': item,
+                'reviews': reviews,
+                'liked': liked,
+            }
+        )
+
+```
+
+## Create a new html template
+Create a new html template named **item_detail.html**
+```html
+<!-- This code is based on Code institute's code (will be changed for our needs) -->
+{% extends 'base.html' %} {% block content %}
+<div class="masthead">
+    <div class="container">
+        <div class="row g-0">
+            <!-- Displays the title, author and created on -->
+            <div class="col-md-6 masthead-text">
+                <h1 class="post-title">{{ item.title }}</h1>
+                <p class="post-subtitle">{{ item.author }} | {{ item.created_on }}</p>
+            </div>
+            <!-- Default image if none exists -->
+            <div class="d-none d-md-block col-md-6 masthead-image">
+                {% if "placeholder" in post.featured_image.url %}
+                <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" width="100%">
+                {% else %}
+                <img src=" {{ post.food_image.url }}" width="100%">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col card mb-4 mt-3 left top">
+            <div class="card-body">
+                <!-- displays the content -->
+                <p class="card-text">
+                    {{ item.content | safe }}
+                </p>
+                <div class="row">
+                    <!-- Number of likes -->
+                    <div class="col-1">
+                        <strong class="text-secondary">
+                            {{ item.number_of_likes }}
+                        </strong>
+                    </div>
+                    <!-- Displays total reviews -->
+                    <div class="col-1">
+                        {% with reviews.count as total_reviews %}
+                        <strong class="text-secondary">
+                            {{ total_reviews}}
+                        </strong>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Displays Reviews -->
+        <div class="col-md-8 card md-4 mt-3">
+            <h3>Reviews:</h3>
+            <div class="card-body">
+                {% for review in reviews %}
+                    <div class="reviews" style="padding: 10px">
+                    <p class="font-weight-bold">
+                        {{ review.name }}
+                        <span class="text-muted font-weight-normal">
+                            {{ review.created_on }}
+                        </span> Wrote:
+                    </p>
+                    {{ review.body | linebreaks }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4 card mb-4 mt-3">
+            <div class="card-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- End Credit -->
+```
+
+## urls.py within the menu folder
+```python
+urlpatterns = [
+    path('', views.ItemList.as_view(), name='home'),
+    path('<slug:slug>/', views.ItemDetail.as_view(), name='item_detail'), # <<<--- Add this one
+]
+```
+
+## index.html url path
+Navigate to the index.html file and under the placeholder image there is an **a href**, change it to this
+```html
+<a href="{% url 'item_detail' item.slug %}" class="post-link">
+```
