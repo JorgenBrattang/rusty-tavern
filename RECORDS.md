@@ -765,7 +765,7 @@ git push
                             </div>
                             <a href="#" class="post-link">
                                 <h2 class="card-title">{{ item.title }}</h2>
-                                <p class="card-text">{{ item.exceprt }}</p>
+                                <p class="card-text">{{ item.excerpt }}</p>
                             </a>
                             <hr />
                             <p class="card-text text-muted h6">{{ item.created_on }}
@@ -773,7 +773,7 @@ git push
                             </p>
                         </div>
                     </div>
-                {% if forloop.counter|divisiable:3 %}
+                {% if forloop.counter|divisibleby:3 %}
                 </div>
                 <div class="row">
                 {% endif %}
@@ -813,3 +813,36 @@ git commit -m "Base structure to index and base html, from code institute"
 ```
 git push
 ```
+
+# Now to get it visable
+## The Path in new file
+First create a new **urls.py** file within the **menu** folder
+
+```python
+from . import views
+from django.urls import path
+
+urlpatterns = [
+    path('', views.ItemList.as_view(), name='home')
+]
+```
+
+## The Path in the original file
+Now refer this in the original **urls.py** file within the **rustytavern** folder
+```python
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('summernote/', include('django_summernote.urls')),
+    path('', include('menu.urls'), name='menu.urls') # <<<--- Add this one
+]
+```
+
+## Test it out to see if you can see
+```
+python3 manage.py runserver
+```
+
+If you can see the Menu Item now, good, otherwise go back and see what the issue may have been.

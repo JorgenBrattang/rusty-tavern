@@ -18,7 +18,7 @@
                         </div>
                         <a href="#" class="post-link">
                             <h2 class="card-title">{{ item.title }}</h2>
-                            <p class="card-text">{{ item.exceprt }}</p>
+                            <p class="card-text">{{ item.excerpt }}</p>
                         </a>
                         <hr />
                         <p class="card-text text-muted h6">{{ item.created_on }}
@@ -26,7 +26,7 @@
                         </p>
                     </div>
                 </div>
-                {% if forloop.counter|divisiable:3 %}
+                {% if forloop.counter|divisibleby:3 %}
             </div>
             <div class="row">
                 {% endif %}
