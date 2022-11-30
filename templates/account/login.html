@@ -10,6 +10,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-8 mt-5 offset-md-4">
+
       <h1>{% trans "Sign In" %}</h1>
       <p>{% blocktrans %}If you have not created an account yet, then please
         <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
@@ -22,6 +23,7 @@
         <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
         <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
       </form>
+      
     </div>
   </div>
 </div>

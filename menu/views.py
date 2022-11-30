@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic, View
 from .models import Item
+from .forms import ReviewForm
 
 
 class ItemList(generic.ListView):
@@ -18,6 +19,7 @@ class ItemDetail(View):
         liked = False
         if item.likes.filter(id=self.request.user.id).exists():
             liked = True
+        review_form = ReviewForm()
 
         return render(
             request,
@@ -26,5 +28,6 @@ class ItemDetail(View):
                 'item': item,
                 'reviews': reviews,
                 'liked': liked,
+                'review_form': review_form,
             }
         )

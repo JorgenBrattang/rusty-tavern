@@ -973,6 +973,7 @@ Create a new html template named **item_detail.html**
                 {% endfor %}
             </div>
         </div>
+        <!-- Add reviews -->
         <div class="col-md-4 card mb-4 mt-3">
             <div class="card-body">
 
@@ -1224,3 +1225,83 @@ For this stage we will have the same template for all three html files, so just 
 {% endblock %}
 ```
 
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Basic template modifying for login, logout, signup"
+```
+
+```
+git push
+```
+
+# Review Form
+## Create new forms.py file
+Within our **menu** folder create a new file called **forms.py**
+```python
+from .models import Review
+from django import forms
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ('body',)
+
+```
+
+## Updating views.py
+```python
+from .forms import ReviewForm # <<<--- Import this
+
+class ItemDetail(View):
+    def get(self, request, slug, *args, **kwargs):
+        queryset = Item.objects.filter(status=1)
+        item = get_object_or_404(queryset, slug=slug)
+        reviews = item.reviews.filter(approved=True).order_by('created_on')
+        liked = False
+        if item.likes.filter(id=self.request.user.id).exists():
+            liked = True
+
+        return render(
+            request,
+            'item_detail.html',
+            {
+                'item': item,
+                'reviews': reviews,
+                'liked': liked,
+                'review_form': ReviewForm() # <<<--- Add this
+            }
+        )
+```
+
+## Update item_detail.html
+```html
+<!-- Add reviews -->
+<div class="col-md-4 card mb-4 mt-3">
+    <div class="card-body">
+        {% if commented %}
+        <div class="alert alert-success" role="alert">
+            Your comment is awaiting approval
+        </div>
+        {% else %}
+        {% if user.is_authenticated %}
+
+        <h3>Leave a Review:</h3>
+        <p>Posting as: {{ user.username }}</p>
+        <form method="post">
+            {{ review_form | crispy }}
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-lg">Submit</button>
+        </form>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+```
+
+## Commit the changes
