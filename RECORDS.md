@@ -997,3 +997,127 @@ Navigate to the index.html file and under the placeholder image there is an **a 
 ```html
 <a href="{% url 'item_detail' item.slug %}" class="post-link">
 ```
+
+## Check if it's working
+```
+python3 manage.py runserver
+```
+
+Press on one of the Item made, and see if it works, if not. Go back and check!
+
+## Commit the changes
+```
+git add .
+```
+
+```
+git commit -m "Add item_detail.html update the views.py and urls.py"
+```
+
+```
+git push
+```
+
+# Authentication
+## Install django allAuth
+```
+pip3 install django-allauth
+```
+
+Updating the requirements.txt file accordingly
+```
+pip3 freeze --local > requirements.txt
+```
+
+Within the **settings.py** file add allAuth
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.sites', # <<<--- This
+    'allauth', # <<<--- This
+    'allauth.account', # <<<--- This
+    'allauth.socialaccount', # <<<--- This
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
+    'menu',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'django_summernote',
+]
+
+SITE_ID = 1 # <<<--- This
+
+LOGIN_REDIRECT_URL = '/' # <<<--- This
+LOGOUT_REDIRECT_URL = '/' # <<<--- This
+```
+
+## urls path for accounts
+**urls.py** file within **rustytavern** folder
+```python
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('summernote/', include('django_summernote.urls')),
+    path('', include('menu.urls'), name='menu.urls'),
+    path('accounts/', include('allauth.urls')), # <<<--- Add this
+]
+```
+
+## Migrate the changes
+```
+python3 manage.py migrate
+```
+
+## Test if it works
+Start the server
+```
+python3 manage.py runserver
+```
+
+add this behind the URL
+```
+/accounts/signup
+```
+
+Make sure your logout first, by going to the /admin page.
+
+## Lets add the functionality to base.html
+```html
+<!-- Navigation -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <ul class="navbar-nav me-auto mb-2">
+                <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item"><a href="{% url 'account_logout' %}" class="nav-link">Logout</a></li>
+                {% else %}
+                <li class="nav-item"><a href="{% url 'account_signup' %}" class="nav-link">Register</a></li>
+                <li class="nav-item"><a href="{% url 'account_login' %}" class="nav-link">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+```
+
+This goes above the 
+```html
+ <!-- Main content -->
+```
+
+## Lets lock this up in a commit
+
+```
+git add .
+```
+
+```
+git commit -m "Add django-allauth and implement it to the site"
+```
+
+```
+git push
+```
