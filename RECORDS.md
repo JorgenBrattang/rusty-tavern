@@ -1054,6 +1054,8 @@ SITE_ID = 1 # <<<--- This
 
 LOGIN_REDIRECT_URL = '/' # <<<--- This
 LOGOUT_REDIRECT_URL = '/' # <<<--- This
+
+ACCOUNT_EMAIL_VERIFICATION = 'none' # <<<--- This
 ```
 
 ## urls path for accounts
@@ -1121,3 +1123,104 @@ git commit -m "Add django-allauth and implement it to the site"
 ```
 git push
 ```
+
+# Now lets get the templates from django for allauth
+## First lets ask for the python version
+```
+ls ../.pip-modules/lib
+```
+
+```
+python3.8
+```
+
+This will download the folders from our server into our **templates** folder.
+
+```
+ $ cp -r ../.pip-modules/lib/python3.8/site-packages/allauth/templates/* ./templates
+```
+
+Now you have 4 new folders in the **templates** folder
+```
+account
+openid
+socialaccount
+tests
+```
+
+## Edit the templates
+Open upp **account** folder and edit these files
+```
+login.html
+logout.html
+signup.html
+```
+
+By modify this
+```
+{% extends "account/base.html" %}
+```
+
+Into this
+```
+{% extends "base.html" %}
+```
+
+Now they will extend our **base.html** instead
+
+## Modify the login.html
+First we need to take away the socialaccounts part, which we don't need for this project.
+
+This is how your file should look at this stage
+
+```html
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 mt-5 offset-md-4">
+
+        <h1>{% trans "Sign In" %}</h1>
+
+        <p>{% blocktrans %}If you have not created an account yet, then please
+        <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+
+        <form class="login" method="POST" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+        <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+        </form>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+```
+
+## Modify the logout.html and signup.html
+For this stage we will have the same template for all three html files, so just wrap the remaining two like the login.html
+
+```html
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 mt-5 offset-md-4">
+        <!-- The rest of the content goes here -->
+    </div>
+  </div>
+</div>
+{% endblock %}
+```
+
