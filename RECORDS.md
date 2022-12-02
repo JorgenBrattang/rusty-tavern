@@ -1274,7 +1274,7 @@ class ItemDetail(View):
                 'item': item,
                 'reviews': reviews,
                 'liked': liked,
-                'review_form': ReviewForm() # <<<--- Add this
+                'review_form': ReviewForm(),
             }
         )
 ```
@@ -1284,9 +1284,9 @@ class ItemDetail(View):
 <!-- Add reviews -->
 <div class="col-md-4 card mb-4 mt-3">
     <div class="card-body">
-        {% if commented %}
+        {% if reviewed %}
         <div class="alert alert-success" role="alert">
-            Your comment is awaiting approval
+            Your review is awaiting approval
         </div>
         {% else %}
         {% if user.is_authenticated %}
@@ -1305,3 +1305,68 @@ class ItemDetail(View):
 ```
 
 ## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Add form for reviews, not functinal yet"
+```
+
+```
+git push
+```
+
+# Making the review function working
+## Updating the views.py file
+In the class **ItemDetail()** add this
+
+```python
+request,
+    'item_detail.html',
+    {
+        'item': item,
+        'reviews': reviews,
+        'reviewed': False, # <<<--- This one
+        'liked': liked,
+        'review_form': ReviewForm(),
+    }
+```
+Then copy paste the **def get()** and rename it to **post**
+
+```python
+def post(self, request, slug, *args, **kwargs): # <<<--- post instead of get
+    queryset = Item.objects.filter(status=1)
+    item = get_object_or_404(queryset, slug=slug)
+    reviews = item.reviews.filter(approved=True).order_by('created_on')
+    liked = False
+    if item.likes.filter(id=self.request.user.id).exists():
+        liked = True
+
+    # --- Add this section ---
+    review_form = ReviewForm(data=request.POST)
+
+    if review_form.is_valid():
+        review_form.instance.email = request.user.email
+        review_form.instance.name = request.user.username
+        review_form.instance.item = item
+        review_post = review_form.save(commit=False)
+        review_post.save()
+    else:
+        review_form = ReviewForm()
+    # --- end section ---
+
+    return render(
+        request,
+        'item_detail.html',
+        {
+            'item': item,
+            'reviews': reviews,
+            'reviewed': True, # <<<--- Set this to True
+            'liked': liked,
+            'review_form': review_form,
+        }
+    )
+
+```

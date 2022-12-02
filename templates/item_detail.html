@@ -70,9 +70,9 @@
         <!-- Add reviews -->
         <div class="col-md-4 card mb-4 mt-3">
             <div class="card-body">
-                {% if commented %}
+                {% if reviewed %}
                 <div class="alert alert-success" role="alert">
-                    Your comment is awaiting approval
+                    Your review is awaiting approval
                 </div>
                 {% else %}
                 {% if user.is_authenticated %}
