@@ -34,7 +34,24 @@
                     <!-- Number of likes -->
                     <div class="col-1">
                         <strong class="text-secondary">
-                            {{ item.number_of_likes }}
+                            {% if user.is_authenticated %}
+                            <form class="d-inline" action="{% url 'item_like' item.slug %}" method="POST">
+                                {% csrf_token %}
+                                {% if liked %}
+                                <button class="btn" type="submit" value="{{ item.slug }}">
+                                    <i class="fa-solid fa-heart"></i>
+                                </button>
+                                {% else %}
+                                <button class="btn" type="submit" value="{{ item.slug }}">
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
+                                {% endif %}
+                            </form>
+                            {% else %}
+                            <span class="text-secondary"><i class="fa-regular fa-heart"></i></span>
+
+                            {% endif %}
+                            <span class="text-secondary">{{ item.number_of_likes }}</span>
                         </strong>
                     </div>
                     <!-- Displays total reviews -->
@@ -55,7 +72,7 @@
             <h3>Reviews:</h3>
             <div class="card-body">
                 {% for review in reviews %}
-                    <div class="reviews" style="padding: 10px">
+                <div class="reviews" style="padding: 10px">
                     <p class="font-weight-bold">
                         {{ review.name }}
                         <span class="text-muted font-weight-normal">

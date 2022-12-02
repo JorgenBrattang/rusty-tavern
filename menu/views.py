@@ -1,5 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, reverse
 from django.views import generic, View
+from django.http import HttpResponseRedirect
 from .models import Item
 from .forms import ReviewForm
 
@@ -46,8 +47,7 @@ class ItemDetail(View):
             review_form.instance.email = request.user.email
             review_form.instance.name = request.user.username
             review_form.instance.item = item
-            review_post = review_form.save(commit=False)
-            review_post.save()
+            review_form.save()
         else:
             review_form = ReviewForm()
 
@@ -62,3 +62,15 @@ class ItemDetail(View):
                 'review_form': review_form,
             }
         )
+
+
+class ItemLike(View):
+    def post(self, request, slug):
+        item = get_object_or_404(Item, slug=slug)
+
+        if item.likes.filter(id=request.user.id).exists():
+            item.likes.remove(request.user)
+        else:
+            item.likes.add(request.user)
+
+        return HttpResponseRedirect(reverse('item_detail', args=[slug]))

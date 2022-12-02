@@ -1351,8 +1351,7 @@ def post(self, request, slug, *args, **kwargs): # <<<--- post instead of get
         review_form.instance.email = request.user.email
         review_form.instance.name = request.user.username
         review_form.instance.item = item
-        review_post = review_form.save(commit=False)
-        review_post.save()
+        review_form.save()
     else:
         review_form = ReviewForm()
     # --- end section ---
@@ -1369,4 +1368,87 @@ def post(self, request, slug, *args, **kwargs): # <<<--- post instead of get
         }
     )
 
+```
+
+## Commit the updated working review form
+
+```
+git add .
+```
+
+```
+git commit -m "Updated and working review function"
+```
+
+```
+git push
+```
+
+
+# Like function
+## Open views.py
+Add this so we can toggle the **like** function
+
+```python
+class ItemLike(View):
+    def post(self, request, slug):
+        item = get_object_or_404(Item, slug=slug)
+
+        if item.likes.filter(id=request.user.id).exists():
+            item.likes.remove(request.user)
+        else:
+            item.likes.add(request.user)
+
+        return HttpResponseRedirect(reverse('item_detail', args=[slug]))
+```
+
+## Open urls.py in the menu folder
+And make a new path for our **ItemLike** view
+
+```python
+path('like/<slug:slug>', views.ItemLike.as_view(), name='item_like'),
+```
+
+## Open template item_detail.html
+And update this section
+
+```html
+<!-- Number of likes -->
+<div class="col-1">
+    <strong class="text-secondary">
+        {% if user.is_authenticated %}
+        <form class="d-inline" action="{% url 'item_like' item.slug %}" method="POST">
+            {% csrf_token %}
+            {% if liked %}
+            <button class="btn" type="submit" value="{{ item.slug }}">
+                <i class="fa-solid fa-heart"></i>
+            </button>
+            {% else %}
+            <button class="btn" type="submit" value="{{ item.slug }}">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+            {% endif %}
+        </form>
+        {% else %}
+        <span class="text-secondary"><i class="fa-regular fa-heart"></i></span>
+
+        {% endif %}
+        <span class="text-secondary">{{ item.number_of_likes }}</span>
+    </strong>
+</div>
+<!-- Displays total reviews -->
+```
+
+## Commit the working like function
+
+```
+git add .
+```
+
+```
+git commit -m "Add functinal like function to Items"
+```
+
+```
+git push
 ```
