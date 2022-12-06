@@ -1,1 +1,16 @@
-/* Will add stuff later on */
+body {
+
+}
+
+.navbar a {
+    color: black;
+    font-weight: 600;
+}
+
+.active {
+    color: orange;
+}
+
+.navbar a:hover {
+    color: orange;
+}

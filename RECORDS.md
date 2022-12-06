@@ -1452,3 +1452,83 @@ git commit -m "Add functinal like function to Items"
 ```
 git push
 ```
+
+# Design and updates accordingly
+## Activate javascript and jQuery
+At the bottom of the page in **base.html** add this:
+
+```html
+</footer>
+    <!-- Java script -->
+    <script type="text/javascript" src="{% static 'static/js/script.js' %}"></script>  <!--- This one --->
+
+    <!-- Bootstrap javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+```
+
+And this in the **head** tag
+
+```html
+<!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+```
+
+Also we need to create a new folder for this. So within the **static** folder create the folder
+```
+js
+```
+
+And within it a
+```
+script.js
+```
+
+Within the new **script.js** just add this for now
+
+```javascript
+console.log("Hello World!")
+```
+
+So we know it's working
+
+## Now for the updated navigation bar
+In the **base.html** file replace the navigation code with this.
+
+```html
+ <!-- Navigation -->
+    <nav class="navbar justify-content-center">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link {% if '/' == request.path %}active{% endif %}" href="{% url 'home' %}" id="home">Home</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/accounts/logout/' == request.path %}active{% endif %}" href="{% url 'account_logout' %}" id="logout">Logout</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/accounts/signup/' == request.path %}active{% endif %}" href="{% url 'account_signup' %}" id="register">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/accounts/login/' == request.path %}active{% endif %}" href="{% url 'account_login' %}" id="login">Login</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+```
+
+## Commit the new code
+
+```
+git add .
+```
+
+```
+git commit -m "Add links to script.js, jQuery and updated the navbar"
+```
+
+```
+git push
+```
