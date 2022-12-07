@@ -5,11 +5,18 @@ from .models import Item
 from .forms import ReviewForm
 
 
-class ItemList(generic.ListView):
+class ItemList_short(generic.ListView):
     model = Item
     queryset = Item.objects.filter(status=1).order_by('-created_on')
     template_name = 'index.html'
-    paginate_by = 6
+    paginate_by = 3
+
+
+class ItemList(generic.ListView):
+    model = Item
+    queryset = Item.objects.filter(status=1).order_by('-created_on')
+    template_name = 'menu.html'
+    paginate_by = 12
 
 
 class ItemDetail(View):

@@ -1501,18 +1501,18 @@ In the **base.html** file replace the navigation code with this.
     <nav class="navbar justify-content-center">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link {% if '/' == request.path %}active{% endif %}" href="{% url 'home' %}" id="home">Home</a>
+                <a class="nav-link {% if '/' == request.path %}active{% endif %}" href="{% url 'home' %}">Home</a>
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-                <a class="nav-link {% if '/accounts/logout/' == request.path %}active{% endif %}" href="{% url 'account_logout' %}" id="logout">Logout</a>
+                <a class="nav-link {% if '/accounts/logout/' == request.path %}active{% endif %}" href="{% url 'account_logout' %}">Logout</a>
             </li>
             {% else %}
             <li class="nav-item">
-                <a class="nav-link {% if '/accounts/signup/' == request.path %}active{% endif %}" href="{% url 'account_signup' %}" id="register">Register</a>
+                <a class="nav-link {% if '/accounts/signup/' == request.path %}active{% endif %}" href="{% url 'account_signup' %}">Register</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if '/accounts/login/' == request.path %}active{% endif %}" href="{% url 'account_login' %}" id="login">Login</a>
+                <a class="nav-link {% if '/accounts/login/' == request.path %}active{% endif %}" href="{% url 'account_login' %}">Login</a>
             </li>
             {% endif %}
         </ul>
@@ -1527,6 +1527,148 @@ git add .
 
 ```
 git commit -m "Add links to script.js, jQuery and updated the navbar"
+```
+
+```
+git push
+```
+
+# Continue designing
+## Add new button for menu
+And for Home will only have three items on the list instead of 6, a form of display.
+
+This code replaces the one in **base.html**
+
+```html
+ <!-- Navigation -->
+    <nav class="navbar justify-content-center">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link {% if '/' == request.path %}active{% endif %}" href="{% url 'home' %}">Home</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/accounts/logout/' == request.path %}active{% endif %}" href="{% url 'account_logout' %}">Logout</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/accounts/signup/' == request.path %}active{% endif %}" href="{% url 'account_signup' %}">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/accounts/login/' == request.path %}active{% endif %}" href="{% url 'account_login' %}">Login</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+```
+
+## Update the urls.py in menu folder
+```python
+urlpatterns = [
+    path('', views.ItemList_short.as_view(), name='home'),
+    path('menu/', views.ItemList.as_view(), name='menu'),
+    path('menu/<slug:slug>/', views.ItemDetail.as_view(), name='item_detail'),
+    path('menu/like/<slug:slug>', views.ItemLike.as_view(), name='item_like'),
+]
+```
+
+## Add new view in views.py in menu folder
+And update the **ItemList**
+
+```python
+class ItemList_short(generic.ListView):
+    model = Item
+    queryset = Item.objects.filter(status=1).order_by('-created_on')
+    template_name = 'index.html'
+    paginate_by = 3
+```
+
+```python
+class ItemList(generic.ListView):
+    model = Item
+    queryset = Item.objects.filter(status=1).order_by('-created_on')
+    template_name = 'menu.html' # <<<--- This one
+    paginate_by = 12
+```
+
+## Update the cards for menu.html
+Refactored and changed them a bit, will do more. But for now it is good.
+
+*Bug found with the count of the reviews, it counts the non approved as well. Will try to figure that out later.*
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+
+        <!-- For loop for item_list -->
+        {% for item in item_list %}
+        <div class="col-md-2">
+            <div class="card">
+                <!-- Image place holder -->
+                {% if 'placeholder' in item.food_image.url %}
+                <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" alt="default image"
+                    class="card-img-top">
+                {% else %}
+                <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title">{{ item.title }}</h2>
+                    <p class="card-text">{{ item.excerpt }}</p>
+                </div>
+
+                <!-- Displaying created on and number of likes -->
+                <p class="card-text text-muted h6">
+                    <i class="fa-solid fa-heart"></i> {{ item.number_of_likes }}
+                    <i class="fa-solid fa-comment"></i> {{ item.reviews.count}}
+                </p>
+                <div class="card-body">
+                    <a href="{% url 'item_detail' item.slug %}" class="btn btn-primary">More info / Review</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- If divisable by 12 it changes the page -->
+        {% if forloop.counter|divisibleby:12 %}
+        <div class="col">
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- If more then 12 cards exists paginate them -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+            <!-- Goes back to the previous page -->
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; PREV </a>
+            </li>
+            {% endif %}
+
+            <!-- Goes forward to the next page -->
+            {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Update the cards in menu.html"
 ```
 
 ```
