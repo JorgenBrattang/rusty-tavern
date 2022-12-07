@@ -1674,3 +1674,47 @@ git commit -m "Update the cards in menu.html"
 ```
 git push
 ```
+
+# Fix bug so here is the changed part of the document at this point
+## menu.html
+```html
+<div class="card-body">
+    <h2 class="card-title">{{ item.title }}</h2>
+    <p class="card-text">{{ item.excerpt }}</p>
+</div>
+
+<!-- From here -->
+
+<!-- Displaying number of likes and number of reviews -->  
+<p class="card-text text-muted h6">
+    <i class="fa-solid fa-heart"></i> {{ item.number_of_likes }}
+    <i class="fa-solid fa-comment"></i> {{ item.number_of_reviews }}
+
+<!-- To here  -->
+
+</p>
+<div class="card-body">
+
+```
+
+## models.py
+In the class **Item(models.Model):** add this
+
+```python
+def number_of_reviews(self):
+    return self.reviews.filter(approved=True).count()
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Fixed bug that displayed non approved reviews"
+```
+
+```
+git push
+```

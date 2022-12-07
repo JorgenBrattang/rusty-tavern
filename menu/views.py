@@ -67,7 +67,7 @@ class ItemDetail(View):
                 'reviewed': True,
                 'liked': liked,
                 'review_form': review_form,
-            }
+            },
         )
 
 

@@ -27,6 +27,9 @@ class Item(models.Model):
     def number_of_likes(self):
         return self.likes.count()
 
+    def number_of_reviews(self):
+        return self.reviews.filter(approved=True).count()
+
 
 class Review(models.Model):
     item = models.ForeignKey(

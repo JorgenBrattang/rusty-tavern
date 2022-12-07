@@ -56,11 +56,11 @@
                     </div>
                     <!-- Displays total reviews -->
                     <div class="col-1">
-                        {% with reviews.count as total_reviews %}
-                        <strong class="text-secondary">
-                            {{ total_reviews }}
+                        <strong>
+                            <span class="text-secondary">
+                                <i class="fa-solid fa-comment"></i> {{ reviews.count }}
+                            </span>
                         </strong>
-                        {% endwith %}
                     </div>
                 </div>
             </div>
