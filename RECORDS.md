@@ -1718,3 +1718,91 @@ git commit -m "Fixed bug that displayed non approved reviews"
 ```
 git push
 ```
+
+# Add more design and movement to background
+## Overlay and background in base.html
+
+```html
+<body>
+    <div class="overlay">
+        <div class="background-img"></div>
+        ...
+    </div>
+</body>
+```
+
+## CSS in style.css
+This will make the background fade in from black on each reload and the overlay covers the javascript that will make the background move accordingly to the mousemovement.
+
+```css
+* {
+    pointer-events: auto; 
+}
+
+body {
+    background-color: black;
+}
+
+@keyframes easeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    position: absolute;
+    pointer-events: none; 
+}
+
+.background-img {
+    background: url('../../media/grilling-beef-on-charcoal.jpg') -25px -50px;
+    transition: opacity 2s;
+    position: fixed;
+    width: 100%;
+    z-index: -1;
+    height: 100%;
+    background-size: calc(100% + 50px);
+    -webkit-mask-image: radial-gradient(circle at 50% 25%, black 1%, rgba(0, 0, 0, 0.1) 100%);
+    animation: 1s ease-out 0s 1 easeIn;
+}
+```
+
+## Javascript in script.js
+Base code is from [Here](https://codepen.io/Mojer/pen/VrqrbN), have seen similar code to this throught the internet but this one worked best for me.
+```javascript
+$(document).ready(function () {
+    var movementStrength = 50;
+    var height = movementStrength / $(window).height();
+    var width = movementStrength / $(window).width();
+    $('.overlay').mousemove(function (e) {
+        var pageX = e.pageX - ($(window).width() / 2);
+        var pageY = e.pageY - ($(window).height() / 2);
+        var newvalueX = width * pageX * -1 - 50;
+        var newvalueY = height * pageY * -1 - 75;
+        $('.background-img').css('background-position', newvalueX + 'px' + ' ' + newvalueY + 'px');
+    });
+});
+```
+
+## Known bug for now
+The background is repeated and sized wrong when scaling the window. Should not be that hard to fix.
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Add more design and movement to background"
+```
+
+```
+git push
+```
