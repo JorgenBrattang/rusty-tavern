@@ -1,58 +1,55 @@
 {% extends 'base.html' %}
+{% include 'menu.html' %}
 {% block content %}
 
-<div class="container-fluid">
+<!-- Welcome text -->
+<div class="container">
+    <h5 class="text-center text-uppercase mt-5">Welcome to</h5>
+    <h2 class="text-center text-uppercase">Rusty Tavern</h2>
+    <p class="text-center mt-3">The place where you can find calm and relaxing music of old and rustic
+        food!
+    </p>
+</div>
+
+<!-- Cards -->
+<div class="container mt-2">
     <div class="row">
-        <div class="col-12">
-            <div class="row">
-                <!-- For loop for item_list -->
-                {% for item in item_list %}
-                <div class="col-md-2">
-                    <div class="card md-2">
-                        <div class="card-body">
-                            <!-- Image place holder -->
-                            {% if 'placeholder' in item.food_image.url %}
-                            <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg"
-                                alt="default image" class="card-img-top">
-                            {% else %}
-                            <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'item_detail' item.slug %}" class="post-link">
-                            <!-- Title and excerpt -->
-                            <h2 class="card-title">{{ item.title }}</h2>
-                            <p class="card-text">{{ item.excerpt }}</p>
-                        </a>
-                        <hr />
-                        <!-- Displaying created on and number of likes -->
-                        <p class="card-text text-muted h6">{{ item.created_on }}
-                            <i class="fa-solid fa-heart"></i>{{ item.number_of_likes }}
-                        </p>
-                    </div>
-                </div>
-                <!-- If divisable by 3 it changes the page -->
-                {% if forloop.counter|divisibleby:3 %}
-            </div>
-            <div class="row">
-                {% endif %}
-                {% endfor %}
-            </div>
+        <!-- For loop for item_list -->
+        <div class="col"></div>
+        {% for item in item_list %}
+        <div class="col-2">
+            {% include 'card.html' %}
+
+            <!-- If divisable by 12 it changes the page -->
+            {% if forloop.counter|divisibleby:3 %}
+            {% endif %}
         </div>
+        {% endfor %}
+        <div class="col"></div>
     </div>
     <!-- If more then 3 pages exists paginate them -->
     {% if is_paginated %}
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            <!-- Goes back to the previous page -->
-            {% if page_obj.has_previous %}
-            <li><a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; PREV </a></li>
-            {% endif %}
-            <!-- Goes forward to the next page -->
-            {% if page_obj.has_next %}
-            <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
-            {% endif %}
-        </ul>
-    </nav>
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+
+                <!-- Goes back to the previous page -->
+                {% if page_obj.has_previous %}
+                <li><a href="?page={{ page_obj.previous_page_number }}" class="btn btn-primary">&laquo;
+                        PREV
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- Goes forward to the next page -->
+                {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}" class="btn btn-primary"> NEXT
+                        &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
     {% endif %}
 </div>
 

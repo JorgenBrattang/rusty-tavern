@@ -6,12 +6,39 @@ body {
     background-color: black;
 }
 
+h2 {
+    color: rgb(238, 238, 238);
+    margin-bottom: -.5rem;
+}
+
+h5 {
+    color: orange;
+    margin-bottom: -.5rem;
+}
+
+p {
+    color: beige;
+}
+
+.navbar a {
+    color: orange;
+    font-weight: 600;
+}
+
+.active {
+    color: rgb(255, 72, 0);
+}
+
+.navbar a:hover {
+    color: rgb(255, 72, 0);
+}
+
 @keyframes easeIn {
     0% {
         opacity: 0;
     }
     100% {
-        opacity: 1;
+        opacity: .4;
     }
 }
 
@@ -24,26 +51,13 @@ body {
 }
 
 .background-img {
-    background: url('../../media/grilling-beef-on-charcoal.jpg') -25px -50px;
+    background: url('../../media/grilling-beef-on-charcoal.jpg') -500px -200px;
     transition: opacity 2s;
     position: fixed;
     width: 100%;
     z-index: -1;
     height: 100%;
-    background-size: calc(100% + 50px);
-    -webkit-mask-image: radial-gradient(circle at 50% 25%, black 1%, rgba(0, 0, 0, 0.1) 100%);
+    -webkit-mask-image: radial-gradient(circle at 50% 25%, black 0%, rgba(0, 0, 0, 0.5) 95%);
     animation: 1s ease-out 0s 1 easeIn;
-}
-
-.navbar a {
-    color: black;
-    font-weight: 600;
-}
-
-.active {
-    color: orange;
-}
-
-.navbar a:hover {
-    color: orange;
+    opacity: .4;
 }

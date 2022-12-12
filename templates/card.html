@@ -1,0 +1,24 @@
+{% block card %}
+    <div class="card">
+        <!-- Image place holder -->
+        {% if 'placeholder' in item.food_image.url %}
+        <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" alt="default image"
+            class="card-img-top">
+        {% else %}
+        <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+        {% endif %}
+        <div class="card-body">
+            <h4 class="card-title">{{ item.title }}</h4>
+            <p class="card-text">{{ item.excerpt }}</p>
+        </div>
+
+        <!-- Displaying created on and number of likes -->
+        <p class="card-text text-muted h6 text-center">
+            <i class="fa-solid fa-heart"></i> {{ item.number_of_likes }}
+            <i class="fa-solid fa-comment"></i> {{ item.number_of_reviews }}
+        </p>
+        <div class="card-body">
+            <a href="{% url 'item_detail' item.slug %}" class="btn btn-success">More info / Review</a>
+        </div>
+    </div>
+{% endblock %}

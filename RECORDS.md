@@ -1806,3 +1806,115 @@ git commit -m "Add more design and movement to background"
 ```
 git push
 ```
+
+# Update design Home Page
+## index.html update
+
+Put the cards in a different file, **card.html** which is now included int eh file and only three cards are visable at this page, with pagination avaliable *(May take that down later, and introduce random or most popular card instead)*
+
+```html
+{% extends 'base.html' %}
+{% include 'menu.html' %}
+{% block content %}
+
+<!-- Welcome text -->
+<div class="container">
+    <h5 class="text-center text-uppercase mt-5">Welcome to</h5>
+    <h2 class="text-center text-uppercase">Rusty Tavern</h2>
+    <p class="text-center mt-3">The place where you can find calm and relaxing music of old and rustic
+        food!
+    </p>
+</div>
+
+<!-- Cards -->
+<div class="container mt-2">
+    <div class="row">
+        <!-- For loop for item_list -->
+        <div class="col"></div>
+        {% for item in item_list %}
+        <div class="col-2">
+            {% include 'card.html' %}
+
+            <!-- If divisable by 12 it changes the page -->
+            {% if forloop.counter|divisibleby:3 %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div class="col"></div>
+    </div>
+    <!-- If more then 3 pages exists paginate them -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+
+                <!-- Goes back to the previous page -->
+                {% if page_obj.has_previous %}
+                <li><a href="?page={{ page_obj.previous_page_number }}" class="btn btn-primary">&laquo;
+                        PREV
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- Goes forward to the next page -->
+                {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}" class="btn btn-primary"> NEXT
+                        &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+```
+
+## card.html creation
+
+Created a card.html to just house the cards html because the cards will be the same across all pages, so I only need to change one file instead of multiple.
+
+```html
+{% block card %}
+    <div class="card">
+        <!-- Image place holder -->
+        {% if 'placeholder' in item.food_image.url %}
+        <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" alt="default image"
+            class="card-img-top">
+        {% else %}
+        <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+        {% endif %}
+        <div class="card-body">
+            <h4 class="card-title">{{ item.title }}</h4>
+            <p class="card-text">{{ item.excerpt }}</p>
+        </div>
+
+        <!-- Displaying created on and number of likes -->
+        <p class="card-text text-muted h6 text-center">
+            <i class="fa-solid fa-heart"></i> {{ item.number_of_likes }}
+            <i class="fa-solid fa-comment"></i> {{ item.number_of_reviews }}
+        </p>
+        <div class="card-body">
+            <a href="{% url 'item_detail' item.slug %}" class="btn btn-success">More info / Review</a>
+        </div>
+    </div>
+{% endblock %}
+```
+
+## Also a few additions to style.css
+```css
+h2 {
+    color: rgb(238, 238, 238);
+    margin-bottom: -.5rem;
+}
+
+h5 {
+    color: orange;
+    margin-bottom: -.5rem;
+}
+
+p {
+    color: beige;
+}
+```
