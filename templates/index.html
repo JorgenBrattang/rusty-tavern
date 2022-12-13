@@ -12,12 +12,11 @@
 </div>
 
 <!-- Cards -->
-<div class="container mt-2">
-    <div class="row">
+<div class="container">
+    <div class="row justify-content-center">
         <!-- For loop for item_list -->
-        <div class="col"></div>
         {% for item in item_list %}
-        <div class="col-2">
+        <div class="col-md-4 mt-3">
             {% include 'card.html' %}
 
             <!-- If divisable by 12 it changes the page -->
@@ -25,7 +24,6 @@
             {% endif %}
         </div>
         {% endfor %}
-        <div class="col"></div>
     </div>
     <!-- If more then 3 pages exists paginate them -->
     {% if is_paginated %}

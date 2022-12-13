@@ -1918,3 +1918,72 @@ p {
     color: beige;
 }
 ```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Update design on Home Page and new file, card.html"
+```
+
+```
+git push
+```
+
+
+# Improving the card and layout on Home page
+## Card design
+
+```html
+{% block card %}
+<div class="card h-100 d-flex mt-2-sm"> <!-- Added so they are the same height always. -->
+    <!-- Image place holder -->
+    {% if 'placeholder' in item.food_image.url %}
+    <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" alt="default image"
+        class="card-img-top">
+    {% else %}
+    <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+    {% endif %}
+    <div class="card-body">
+        <h4 class="card-title">{{ item.title }}</h4>
+        <p class="card-text">{{ item.excerpt }}</p>
+    </div>
+
+    <div class="container inline-d-flex justify-content-end">  <!-- Made a flex container to center the content -->
+        <!-- Displaying created on and number of likes -->
+        <p class="card-text text-muted h6 text-center">
+            <i class="fa-solid fa-heart"></i> {{ item.number_of_likes }}
+            <i class="fa-solid fa-comment"></i> {{ item.number_of_reviews }}
+        </p>
+        <div class="mb-2 text-center"> <!-- Centered the button -->
+            <a href="{% url 'item_detail' item.slug %}" class="btn btn-success">More info / Review</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+```
+
+## index.html
+
+Made some improvements to the layout so its now easier to read.
+
+```html
+<!-- Cards -->
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- For loop for item_list -->
+        {% for item in item_list %}
+        <div class="col-md-4 mt-3">
+            {% include 'card.html' %}
+
+            <!-- If divisable by 12 it changes the page -->
+            {% if forloop.counter|divisibleby:3 %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <!-- If more then 3 pages exists paginate them -->
+```
