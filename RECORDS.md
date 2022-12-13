@@ -1987,3 +1987,149 @@ Made some improvements to the layout so its now easier to read.
     </div>
     <!-- If more then 3 pages exists paginate them -->
 ```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Improvements on card.html and index.html"
+```
+
+```
+git push
+```
+
+# Improving the user login, logout, signup design
+
+## Small addon to style.css
+```css
+.color-main {
+    color: orange;
+}
+```
+
+## login.html
+
+To access these files navigate to **templates** and into the **account** folder.
+
+Improved the design with help of crispy forms and bootstrap.
+
+```html
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="row justify-content-center">
+      <div class="col-md-4 mt-5">
+        <h1 class="color-main text-center">{% trans "Sign In" %}</h1>
+        <p class="text-center">{% blocktrans %}If you don't have an account yet, please 
+          <a class="color-main" href="{{ signup_url }}">sign up</a> first. This will allow you to make reservations and review the meal.{% endblocktrans %}</p>
+        <form class="login color-main" method="POST" action="{% url 'account_login' %}">
+          {% csrf_token %}
+          {{ form|crispy }}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <a class="button secondaryAction color-main" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+          <br><button class="mt-2 px-5 primaryAction btn btn-success" type="submit">{% trans "Sign In" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+```
+
+## signup.html
+```html
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-4 mt-5">
+      <h1 class="color-main text-center">{% trans "Sign Up" %}</h1>
+
+      <p class="text-center">{% blocktrans %}When you sign up you can make reservations and review the meal, to help
+        others read about your experiance and help us improve our service.</p>
+
+      <p class="text-center"> If you already have an
+        account? Then please <a class="color-main" href="{{ login_url }}">sign in</a>.{% endblocktrans %}
+      </p>
+
+      <form class="signup color-main" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <button type="submit" class="btn btn-success px-5">{% trans "Sign Up" %} &raquo;</button>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+```
+
+## logout.html
+```html
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-4 mt-5">
+      <h1 class="color-main text-center">{% trans "Sign Out" %}</h1>
+
+      <p class="text-center">{% trans 'Are you sure you want to sign out?' %}</p>
+
+      <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        <div class="text-center">
+          <button type="submit" class="btn btn-success px-5">{% trans 'Sign Out' %}</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Improving the user login, logout, signup design"
+```
+
+```
+git push
+```

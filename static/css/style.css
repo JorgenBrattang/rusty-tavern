@@ -16,6 +16,10 @@ h5 {
     margin-bottom: -.5rem;
 }
 
+.color-main {
+    color: orange;
+}
+
 p {
     color: beige;
 }
