@@ -2133,3 +2133,166 @@ git commit -m "Improving the user login, logout, signup design"
 ```
 git push
 ```
+
+# Adding reservations (basic)
+## Start the new app
+In the terminal
+```
+python manage.py startapp reservation
+```
+
+## Create a new template
+in the **templates** folder create
+```
+reservations.html
+```
+
+Just the bare minimum for now
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="h1">Reservations</div>
+
+{% endblock %}
+```
+
+## Create our model
+In the models.py in the newly create app reservations
+```python
+from django.db import models
+
+class Reservation(models.Model):
+    name = models.CharField(max_length=50)
+    email = models.EmailField()
+    phone = models.IntegerField()
+    number_of_persons = models.IntegerField()
+    Date = models.DateField()
+    time = models.TimeField()
+
+    def __str__(self):
+        return self.name
+```
+
+## Add our app to the project
+In settings.py in the **rustytavern** folder
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
+    'menu',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'django_summernote',
+    'reservation', # <<<--- Add this
+]
+```
+
+## Migrate the changes to the database
+In the terminal
+```
+python3 manage.py makemigrations
+```
+```
+python3 manage.py migrate
+```
+
+## Add it to our admin site
+Open **admins.py**
+
+```python
+from django.contrib import admin
+from .models import Reservation
+
+admin.site.register(Reservation)
+``` 
+
+## Test the new app
+Test it by go to the admin site and add a new reservation, it should work if you followed the steps above
+
+## Now lets create urls.py
+Create the file in the **reservation** folder
+
+```python
+from . import views
+from django.urls import path
+
+urlpatterns = [
+    path('', views.Reserv_table, name='reserve_table'),
+]
+```
+
+## rustytavern's urls.py
+```python
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('summernote/', include('django_summernote.urls')),
+    path('', include('menu.urls'), name='menu.urls'),
+    path('accounts/', include('allauth.urls')),
+    path('reserve_table/', include('reservation.urls'), name='reservation.urls'), # <<<--- Add this
+]
+```
+
+## create the forms.py in the reservation folder
+create the forms.py and add this
+
+```python
+from .models import Reservation
+from django import forms
+
+
+class ReserveTableForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ('__all__')
+```
+
+## views.py in reservation folder
+
+```python
+from django.shortcuts import render
+from .models import Reservation
+from .forms import ReserveTableForm
+
+def Reserv_table(request):
+    form = ReserveTableForm()
+
+    if request.method == 'POST':
+        form = ReserveTableForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    context = {'form': form}
+    
+    return render(request, 'reservations.html', context)
+```
+
+## reservations.html
+This is still the basic, but will work.
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 class="text-center color-main">Reservation</h1>
+<form action="" method="POST" class="color-main text-center">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit" class="btn btn-success px-5">Submit</button>
+</form>
+
+{% endblock %}
+```
