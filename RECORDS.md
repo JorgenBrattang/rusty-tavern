@@ -2446,3 +2446,22 @@ git commit -m "Testing email confirmation for reserving table"
 ```
 git push
 ```
+
+# Took the decision to leave it as is
+## Reservation confirmation
+This is an extra feature that I will try to add if I have the time, but for now I need to focus to get everything else that is needed for the project to work instead.
+So I reverted back the changes made before **(Testing if I can use email confirmation)**, but I learned a bit on the way and Im happy with that for now.
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Reverting back befor testing email confirmation"
+```
+
+```
+git push
+```

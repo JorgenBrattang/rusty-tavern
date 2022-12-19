@@ -18,19 +18,6 @@ def Reserv_table(request):
                 'reserved': True,
             }
 
-            subject = 'Thank you for your reservation from Rusty Tavern'
-            message = 'Your information is here... later'
-            from_email = settings.EMAIL_HOST_USER
-            to_list = [settings.EMAIL_HOST_USER]
-
-            send_mail(
-                subject,
-                message,
-                from_email,
-                to_list,
-                False
-            )
-
     if request.method == 'GET':
         context = {
             'form': form,
