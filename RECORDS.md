@@ -2296,3 +2296,153 @@ This is still the basic, but will work.
 
 {% endblock %}
 ```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Add app reservation and added to site"
+```
+
+```
+git push
+```
+
+
+# Reservations improving
+## The reservation is sent
+In the views.py in **reservation** app
+
+This will now get the form if its in the "GET" as well as "POST" method. In the "GET" method it will have the default of **"reserved"** set to FALSE and it changes when the "POST" is valid so you will see the message in **reservations.html** that is promted when that occurs. *(see below)*
+
+```python
+from django.shortcuts import render
+from .models import Reservation
+from .forms import ReserveTableForm
+
+
+def Reserv_table(request):
+    form = ReserveTableForm()
+
+    if request.method == 'POST':
+        form = ReserveTableForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context = {
+                'form': form,
+                'reserved': True,
+            }
+
+    if request.method == 'GET':
+        context = {
+            'form': form,
+            'reserved': False,
+        }
+
+    return render(request, 'reservations.html', context)
+```
+
+## Changing the reservations.html
+This is temporary, but will output the information that you put in and will soon be sent to the corresponing email with more information.
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 class="text-center color-main">Reservation</h1>
+<form action="" method="POST" class="color-main text-center">
+    {% csrf_token %}
+    {% if reserved %}
+        <div class="alert alert-success" role="alert">
+            <ul>
+                <li>Your reservervation is {{ reserved }}</li>
+                <li>Under the name: {{ form.name.value }}</li>
+                <li>Email: {{ form.email.value }}</li>
+                <li>Phone: {{ form.phone.value }}</li>
+                <li>Number of persons: {{ form.number_of_persons.value }}</li>
+                <li>Date: {{ form.Date.value }}</li>
+                <li>Time: {{ form.time.value }}</li>
+            </ul>
+        </div>
+    {% else %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success px-5">Submit</button>
+    {% endif %}
+</form>
+
+{% endblock %}
+```
+
+## Testing if I can use email confirmation
+This is a test, it may not be in the final deployment. But I hope I will get it to work.
+
+In the **settings.py** file in rustytavern
+```python
+# Email settings
+# Tutor Ed helped me to set up this code
+if 'DEVELOPMENT' in os.environ:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'something@example.com'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASS')
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+# End Credit
+```
+
+**views.py** in reservation app
+```python
+if request.method == 'POST':
+    form = ReserveTableForm(request.POST)
+    if form.is_valid():
+        form.save()
+
+        context = {
+            'form': form,
+            'reserved': True,
+        }
+
+        subject = 'Thank you for your reservation from Rusty Tavern'
+        message = 'Your information is here... later'
+        from_email = settings.EMAIL_HOST_USER
+        to_list = [settings.EMAIL_HOST_USER]
+
+        send_mail(
+            subject,
+            message,
+            from_email,
+            to_list,
+            False
+        )
+```
+
+**env.py** file
+```python
+os.environ['DEVELOPMENT'] = 'Yes!'
+os.environ['EMAIL_HOST_USER'] = 'yourEmailHere@gmail.com'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_PASSWORD = 'YourPassWordHere'
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Testing email confirmation for reserving table"
+```
+
+```
+git push
+```

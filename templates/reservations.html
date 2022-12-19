@@ -3,9 +3,23 @@
 
 <h1 class="text-center color-main">Reservation</h1>
 <form action="" method="POST" class="color-main text-center">
-{% csrf_token %}
-{{ form.as_p }}
-<button type="submit" class="btn btn-success px-5">Submit</button>
+    {% csrf_token %}
+    {% if reserved %}
+        <div class="alert alert-success" role="alert">
+            <ul>
+                <li>Your reservervation is {{ reserved }}</li>
+                <li>Under the name: {{ form.name.value }}</li>
+                <li>Email: {{ form.email.value }}</li>
+                <li>Phone: {{ form.phone.value }}</li>
+                <li>Number of persons: {{ form.number_of_persons.value }}</li>
+                <li>Date: {{ form.Date.value }}</li>
+                <li>Time: {{ form.time.value }}</li>
+            </ul>
+        </div>
+    {% else %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success px-5">Submit</button>
+    {% endif %}
 </form>
 
 {% endblock %}
