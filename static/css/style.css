@@ -55,12 +55,13 @@ p {
 }
 
 .background-img {
-    background: url('../../media/grilling-beef-on-charcoal.jpg') -500px -200px;
+    background: url('../media/background-img.jpg') -100px -100px;
     transition: opacity 2s;
     position: fixed;
     width: 100%;
     z-index: -1;
     height: 100%;
+    background-size: 150%;
     -webkit-mask-image: radial-gradient(circle at 50% 25%, black 0%, rgba(0, 0, 0, 0.5) 95%);
     animation: 1s ease-out 0s 1 easeIn;
     opacity: .4;

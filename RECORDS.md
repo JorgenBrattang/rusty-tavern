@@ -2465,3 +2465,51 @@ git commit -m "Reverting back befor testing email confirmation"
 ```
 git push
 ```
+
+# Background image problem with Heroku
+## DISABLE_COLLECTSTATIC
+Disable the DISABLE_COLLECTSTATIC in heroku
+
+## Change the location of the media folder
+Moved it into the static folder
+
+## Changed the settings in script.js
+In the static folder I changed this in the file
+
+```javascript
+// Start Credited code
+$(document).ready(function () {
+    var movementStrength = 50;
+    var height = movementStrength / $(window).height();
+    var width = movementStrength / $(window).width();
+    $('.overlay').mousemove(function (e) {
+        var pageX = e.pageX - ($(window).width() / 2);
+        var pageY = e.pageY - ($(window).height() / 2);
+        var newvalueX = width * pageX - 100; // This to 100
+        var newvalueY = height * pageY - 100; // This to 100
+        $('.background-img').css('background-position', newvalueX + 'px' + ' ' + newvalueY + 'px');
+    });
+});
+// End Credited code
+```
+
+## Change the style.css
+File is now changed and compressed
+```css
+.background-img {
+    background: url('../media/background-img.jpg') -100px -100px;
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Possible solution to the background issue not showing up due to file size"
+```
+
+```
+git push
+```
