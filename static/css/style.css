@@ -55,7 +55,7 @@ p {
 }
 
 .background-img {
-    background: url('../media/background-img.jpg') -100px -100px;
+    background: url('https://res.cloudinary.com/jorgenb/image/upload/v1671452494/static/media/background-img.8b7f25ede20b.jpg') -100px -100px;
     transition: opacity 2s;
     position: fixed;
     width: 100%;
