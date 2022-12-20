@@ -11,4 +11,5 @@ $(document).ready(function () {
         $('.background-img').css('background-position', newvalueX + 'px' + ' ' + newvalueY + 'px');
     });
 });
+
 // End Credited code

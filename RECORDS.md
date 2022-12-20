@@ -2513,3 +2513,108 @@ git commit -m "Possible solution to the background issue not showing up due to f
 ```
 git push
 ```
+
+# Static files with cloudinary (FIXED)
+## Explaination
+There was an issue that the background image did not show up, and I got help from Ger from Code Institute to help me. He found out that it wasn't cloudinary's fault that the server didn't pick up the background, it was due to the URL background link in CSS and the links from the HTML page that connects them.
+
+## Fixes made
+In the base.html these fixes were made
+
+```html
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/script.js' %}"></script>
+```
+
+In the CSS code, style.css
+
+Used the static link from cloudinary, fixed the issue that it wasn't showing up.
+```CSS
+background: url('https://res.cloudinary.com/jorgenb/image/upload/v1671452494/static/media/background-img.8b7f25ede20b.jpg') -100px -100px;
+```
+
+# Reservations design update
+**reservations.html**
+
+```html
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-5">
+            <h1 class="text-center color-main">Reservation</h1>
+            <form action="" method="POST" class="color-main">
+                {% csrf_token %}
+                {% if reserved %}
+                    <div class="alert alert-success" role="alert">
+                        <ul class="list-unstyled">
+                            <li>Your reservervation is {{ reserved }}</li>
+                            <li>Under the name: {{ form.name.value }}</li>
+                            <li>Email: {{ form.email.value }}</li>
+                            <li>Phone: {{ form.phone.value }}</li>
+                            <li>Number of persons: {{ form.number_of_persons.value }}</li>
+                            <li>Date: {{ form.Date.value }}</li>
+                            <li>Time: {{ form.time.value }}</li>
+                        </ul>
+                    </div>
+                {% else %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-success px-5">Submit</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+```
+
+## Date and Time
+Now to specify the time
+
+In the **forms.py** file edit this to the class Reservation
+
+```python
+from .models import Reservation
+from django import forms
+from django.forms import DateInput
+import datetime
+
+INTERVALS = [
+    (datetime.time(hour=x, minute=y), '{:02d}:{:02d}'.format(x, y))
+    for x in range(11, 21)
+    for y in range(0, 60, 15)
+]
+
+class DateInputType(DateInput):
+    input_type = 'date'
+
+
+class ReserveTableForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ('__all__')
+        widgets = {
+            'Date': DateInputType(),
+            'time': forms.Select(choices=INTERVALS)
+        }
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Static files fixed and added Time and Date picker"
+```
+
+```
+git push
+```
