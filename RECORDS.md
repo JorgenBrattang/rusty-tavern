@@ -2928,3 +2928,298 @@ git commit -m "Add edit and delete to reservation and renaming files and classes
 ```
 git push
 ```
+
+
+# Updating reservation date
+## importing new datepicker
+```
+pip install django-flatpickr
+```
+
+## settings.py (rustytavern)
+```python
+INSTALLED_APPS = [
+    ...
+    'django_flatpickr',
+]
+```
+
+## forms.py (reservation)
+```python
+from .models import Reservation
+from django import forms
+from django.forms import DateInput
+from django_flatpickr.widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
+import datetime
+
+INTERVALS = [
+    (datetime.time(hour=x, minute=y), '{:02d}:{:02d}'.format(x, y))
+    for x in range(11, 21)
+    for y in range(0, 60, 15)
+]
+
+
+class ReserveTableForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ('__all__')
+        widgets = {
+            'Date': DatePickerInput(),
+            'time': forms.Select(choices=INTERVALS)
+        }
+```
+
+## renaming models.py (reservation)
+```python
+table_for = models.PositiveIntegerField(default=1)
+```
+
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+
+# Redesign layout
+
+## Add reservation template
+
+add_reservation.html
+
+```html
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{{ form.media }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-5">
+            {% if reserved %}
+            <div class="alert alert-light" role="alert">
+                <p>Thank you {{ form.name.value }} for the Reservation, here are the details:</p>
+                <ul class="list-unstyled text-secondary">
+                    <li>Name: {{ form.name.value }}</li>
+                    <li>Email: {{ form.email.value }}</li>
+                    <li>Phone: {{ form.phone.value }}</li>
+                    <li>Table for: {{ form.table_for.value }}</li>
+                    <li>Date: {{ form.Date.value }}</li>
+                    <li>Time: {{ form.time.value }}</li>
+                </ul>
+                <p>Make sure you keep take note of this information, otherwise you can just contact us and we will be
+                    happy to help you out.</p>
+                <a class="nav-link {% if '/' == request.path %}active{% endif %} text-center" href="{% url 'home' %}">
+                    <button class="btn btn-success px-5">Return to Home page</button>
+                </a>
+            </div>
+            {% else %}
+            <form method="POST" class="color-white">
+                {% csrf_token %}
+                <h1 class="text-center color-main">Reservation</h1>
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-success px-5">Submit</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+```
+
+## Menu template
+
+menu.html
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                            <th>Description</th>
+                            <th>Likes</th>
+                            <th>Reviews</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in item_list %}
+                        <tr class="align-middle">
+                            <th scope="row">{{ item.title }}</th>
+                            <td class="col-7">{{ item.excerpt }}</td>
+                            <td>
+                                <p class="card-text text-muted h6">
+                                    <i class="fa-solid fa-heart"></i> {{ item.number_of_likes }}
+                                </p>
+                            </td>
+                            <td>
+                                <p class="card-text text-muted h6">
+                                    <i class="fa-solid fa-comment"></i> {{ item.number_of_reviews }}
+                                </p>
+                            </td>
+                            <td>
+                                <a href="{% url 'item_detail' item.slug %}" class="btn btn-success">More info /
+                                    Review</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+
+                        {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; PREV </a>
+                        </li>
+                        {% endif %}
+
+                        {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}" class="page-link"> NEXT &raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+```
+
+## item detail template
+
+item_detail.html
+```html
+{% extends 'base.html' %}
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<h1 class="text-center color-main mt-5">Details</h1>
+
+<div class="container mt-3">
+    <div class="row gx-3 mb-3">
+        <div class="col">
+            <div class="p-3 card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="col-md-4 img-thumbnail w-100">
+                                <!-- Default image if none exists -->
+                                {% if 'placeholder' in item.food_image.url %}
+                                <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg"
+                                    alt="default image" class="card-img-top">
+                                {% else %}
+                                <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Content -->
+                        <div class="col">
+                            <h1 class="post-title text-center">{{ item.title }}</h1>
+                            <p class="col-md-6 card-text">
+                                {{ item.content | safe }}
+                            </p>
+                            <!-- Number of likes -->
+                            <div class="mt-5 text-center">
+                                <strong>
+                                    {% if user.is_authenticated %}
+                                    <form class="d-inline" action="{% url 'item_like' item.slug %}" method="POST">
+                                        {% csrf_token %}
+                                        {% if liked %}
+                                        <button class="btn" type="submit" value="{{ item.slug }}">
+                                            <i class="fa-solid fa-heart text-danger"></i>
+                                        </button>
+                                        {% else %}
+                                        <button class="btn" type="submit" value="{{ item.slug }}">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </button>
+                                        {% endif %}
+                                    </form>
+                                    {% else %}
+                                    <span class="text-danger"><i class="fa-regular fa-heart"></i></span>
+                                    {% endif %}
+                                    <span class="text-secondary">{{ item.number_of_likes }}</span>
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row gx-3">
+        <div class="col-8">
+            <div class="p-3 card">
+                <!-- Displays Reviews -->
+                <h3>Reviews:</h3>
+                <div class="card-body">
+                    {% for review in reviews %}
+                    <div class="reviews">
+                        <p class="font-weight-bold">
+                            {{ review.name }}
+                            <span class="text-muted font-weight-normal">
+                                {{ review.created_on }}
+                            </span> Wrote:
+                        </p>
+                        {{ review.body | linebreaks }}
+                    </div>
+                    {% empty %}
+                    <p>There are no reviews yet, so if you have tried <strong>{{ item }}</strong>. Please consider to review it to help us
+                        improve and for others to learn from your experiance.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-3 card">
+                <!-- Add reviews -->
+                <div class="card-body">
+                    {% if reviewed %}
+                    <div class="alert alert-success" role="alert">
+                        Your review is awaiting approval
+                    </div>
+                    {% else %}
+                    {% if user.is_authenticated %}
+
+                    <h3>Leave a Review:</h3>
+                    <p>Posting as: {{ user.username }}</p>
+                    <form method="post">
+                        {{ review_form | crispy }}
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "redesign template for menu, view_reservation and item_detail"
+```
+
+```
+git push
+```

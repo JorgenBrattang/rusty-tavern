@@ -1,109 +1,107 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block content %}
 
 {% load crispy_forms_tags %}
 
-<div class="masthead">
-    <div class="container">
-        <div class="row g-0">
-            <!-- Displays the title, author and created on -->
-            <div class="col-md-6 masthead-text">
-                <h1 class="post-title">{{ item.title }}</h1>
-                <p class="post-subtitle">{{ item.author }} | {{ item.created_on }}</p>
-            </div>
-            <!-- Default image if none exists -->
-            <div class="d-none d-md-block col-md-6 masthead-image">
-                {% if "placeholder" in post.featured_image.url %}
-                <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg" width="100%">
-                {% else %}
-                <img src=" {{ post.food_image.url }}" width="100%">
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+<h1 class="text-center color-main mt-5">Details</h1>
 
-<div class="container">
-    <div class="row">
-        <div class="col card mb-4 mt-3 left top">
-            <div class="card-body">
-                <!-- displays the content -->
-                <p class="card-text">
-                    {{ item.content | safe }}
-                </p>
-                <div class="row">
-                    <!-- Number of likes -->
-                    <div class="col-1">
-                        <strong class="text-secondary">
-                            {% if user.is_authenticated %}
-                            <form class="d-inline" action="{% url 'item_like' item.slug %}" method="POST">
-                                {% csrf_token %}
-                                {% if liked %}
-                                <button class="btn" type="submit" value="{{ item.slug }}">
-                                    <i class="fa-solid fa-heart"></i>
-                                </button>
+<div class="container mt-3">
+    <div class="row gx-3 mb-3">
+        <div class="col">
+            <div class="p-3 card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="col-md-4 img-thumbnail w-100">
+                                <!-- Default image if none exists -->
+                                {% if 'placeholder' in item.food_image.url %}
+                                <img src="https://codeinstitute.s3.amazonaws.com/fullstack/blog/default.jpg"
+                                    alt="default image" class="card-img-top">
                                 {% else %}
-                                <button class="btn" type="submit" value="{{ item.slug }}">
-                                    <i class="fa-regular fa-heart"></i>
-                                </button>
+                                <img src="{{ item.food_image.url }}" alt="food image" class="card-img-top">
                                 {% endif %}
-                            </form>
-                            {% else %}
-                            <span class="text-secondary"><i class="fa-regular fa-heart"></i></span>
-
-                            {% endif %}
-                            <span class="text-secondary">{{ item.number_of_likes }}</span>
-                        </strong>
-                    </div>
-                    <!-- Displays total reviews  -->
-                    <div class="col-1">
-                        <strong>
-                            <span class="text-secondary">
-                                <i class="fa-solid fa-comment"></i> {{ reviews.count }}
-                            </span>
-                        </strong>
+                            </div>
+                        </div>
+                        <!-- Content -->
+                        <div class="col">
+                            <h1 class="post-title text-center">{{ item.title }}</h1>
+                            <p class="col-md-6 card-text">
+                                {{ item.content | safe }}
+                            </p>
+                            <!-- Number of likes -->
+                            <div class="mt-5 text-center">
+                                <strong>
+                                    {% if user.is_authenticated %}
+                                    <form class="d-inline" action="{% url 'item_like' item.slug %}" method="POST">
+                                        {% csrf_token %}
+                                        {% if liked %}
+                                        <button class="btn" type="submit" value="{{ item.slug }}">
+                                            <i class="fa-solid fa-heart text-danger"></i>
+                                        </button>
+                                        {% else %}
+                                        <button class="btn" type="submit" value="{{ item.slug }}">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </button>
+                                        {% endif %}
+                                    </form>
+                                    {% else %}
+                                    <span class="text-danger"><i class="fa-regular fa-heart"></i></span>
+                                    {% endif %}
+                                    <span class="text-secondary">{{ item.number_of_likes }}</span>
+                                </strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>            
-        </div>
-    </div>
-    <div class="row">
-        <!-- Displays Reviews -->
-        <div class="col-md-8 card md-4 mt-3">
-            <h3>Reviews:</h3>
-            <div class="card-body">
-                {% for review in reviews %}
-                <div class="reviews" style="padding: 10px">
-                    <p class="font-weight-bold">
-                        {{ review.name }}
-                        <span class="text-muted font-weight-normal">
-                            {{ review.created_on }}
-                        </span> Wrote:
-                    </p>
-                    {{ review.body | linebreaks }}
-                </div>
-                {% endfor %}
             </div>
         </div>
-        <!-- Add reviews -->
-        <div class="col-md-4 card mb-4 mt-3">
-            <div class="card-body">
-                {% if reviewed %}
-                <div class="alert alert-success" role="alert">
-                    Your review is awaiting approval
-                </div>
-                {% else %}
-                {% if user.is_authenticated %}
+    </div>
 
-                <h3>Leave a Review:</h3>
-                <p>Posting as: {{ user.username }}</p>
-                <form method="post">
-                    {{ review_form | crispy }}
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-success btn-lg">Submit</button>
-                </form>
-                {% endif %}
-                {% endif %}
+
+    <div class="row gx-3">
+        <div class="col-8">
+            <div class="p-3 card">
+                <!-- Displays Reviews -->
+                <h3>Reviews:</h3>
+                <div class="card-body">
+                    {% for review in reviews %}
+                    <div class="reviews">
+                        <p class="font-weight-bold">
+                            {{ review.name }}
+                            <span class="text-muted font-weight-normal">
+                                {{ review.created_on }}
+                            </span> Wrote:
+                        </p>
+                        {{ review.body | linebreaks }}
+                    </div>
+                    {% empty %}
+                    <p>There are no reviews yet, so if you have tried <strong>{{ item }}</strong>. Please consider to review it to help us
+                        improve and for others to learn from your experiance.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-3 card">
+                <!-- Add reviews -->
+                <div class="card-body">
+                    {% if reviewed %}
+                    <div class="alert alert-success" role="alert">
+                        Your review is awaiting approval
+                    </div>
+                    {% else %}
+                    {% if user.is_authenticated %}
+
+                    <h3>Leave a Review:</h3>
+                    <p>Posting as: {{ user.username }}</p>
+                    <form method="post">
+                        {{ review_form | crispy }}
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

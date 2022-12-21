@@ -4,33 +4,50 @@
 
 <h1 class="text-center color-main mt-5">View Reservations</h1>
 
-<div class="container">
+<div class="container mt-3">
     <div class="row">
-        {% for reservation in reservation_list %}
-
-        <div class="col-md-3 mt-3">
-            <ul class="list-unstyled">
-                <li>Name: {{ reservation.name }}</li>
-                <li>Email: {{ reservation.email }}</li>
-                <li>Phone: {{ reservation.phone }}</li>
-                <li>Number of persons: {{ reservation.number_of_persons }}</li>
-                <li>Date: {{ reservation.Date }}</li>
-                <li>Time: {{ reservation.time }}</li>
-                <li class="mt-2">
-                    <div class="row">
-                        <a href="../edit/{{ reservation.pk }}">
-                            <button class="btn btn-success px-5">Edit</button>
-                        </a>
-                    </div>
-                    <div class="row mt-2">
-                        <a href="../delete/{{ reservation.pk }}">
-                            <button class="btn btn-danger px-5">Delete</button>
-                        </a>
-                    </div>
-                </li>
-            </ul>
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Table for</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservation_list %}
+                        <tr class="align-middle">
+                            <th scope="row">{{ reservation.Date}}</th>
+                            <td>{{ reservation.name }}</td>
+                            <td>{{ reservation.email }}</td>
+                            <td>{{ reservation.phone }}</td>
+                            <td>{{ reservation.table_for }}</td>
+                            <td>{{ reservation.Date }}</td>
+                            <td>{{ reservation.time }}</td>
+                            <td>
+                                <a href="../edit/{{ reservation.pk }}">
+                                    <button class="btn btn-success">Edit</button>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="../delete/{{ reservation.pk }}">
+                                    <button class="btn btn-danger">Delete</button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        {% endfor %}
     </div>
 </div>
 

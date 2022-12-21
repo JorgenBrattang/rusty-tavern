@@ -53,7 +53,15 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'django_summernote',
     'reservation',
+    'django_flatpickr',
 ]
+
+DJANGO_FLATPICKR = {
+    "theme_name": "dark",
+    "options": {
+        'minDate': "today"
+    }
+}
 
 SITE_ID = 1
 

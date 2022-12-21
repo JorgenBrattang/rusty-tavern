@@ -8,7 +8,7 @@ class ReservationAdmin(admin.ModelAdmin):
         'name',
         'email',
         'phone',
-        'number_of_persons',
+        'table_for',
         'Date',
         'time'
     )

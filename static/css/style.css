@@ -1,6 +1,5 @@
 * {
     pointer-events: auto;
-    color: beige;
 }
 
 body {
@@ -27,6 +26,10 @@ h5 {
 
 .color-main {
     color: orange;
+}
+
+.font-large {
+    font-size: 3rem;
 }
 
 p {
