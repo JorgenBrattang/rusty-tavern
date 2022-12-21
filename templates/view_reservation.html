@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center color-main mt-5">View Reservations</h1>
+
+<div class="container">
+    <div class="row justify-content-center">
+        {% for reservation in reservation_list %}
+        <div class="col-md-4 mt-3 color-main text-center">
+            {{ reservation.name }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

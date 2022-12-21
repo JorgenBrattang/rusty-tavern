@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% include 'menu.html' %}
 {% block content %}
 
 <!-- Welcome text -->
@@ -18,7 +17,6 @@
         {% for item in item_list %}
         <div class="col-md-4 mt-3">
             {% include 'card.html' %}
-
             <!-- If divisable by 12 it changes the page -->
             {% if forloop.counter|divisibleby:3 %}
             {% endif %}

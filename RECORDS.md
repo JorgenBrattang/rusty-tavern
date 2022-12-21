@@ -2618,3 +2618,86 @@ git commit -m "Static files fixed and added Time and Date picker"
 ```
 git push
 ```
+
+# Making the reservation list
+## Setting up admin page
+
+In **reservation** folder in the admin.py file, this will display all the information that we want in the admin page for now.
+
+```python
+from django.contrib import admin
+from .models import Reservation
+
+
+@admin.register(Reservation)
+class ReservationAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'email',
+        'phone',
+        'number_of_persons',
+        'Date',
+        'time'
+    )
+```
+
+## Setting up the views.py
+in the **views.py** we are setting up a new view for the reservations to show up in a list
+
+```python
+from django.conf import settings
+from django.shortcuts import render
+from django.core.mail import send_mail
+from django.views import generic, View
+from .models import Reservation
+from .forms import ReserveTableForm
+
+
+class ReservationList(generic.ListView):
+    model = Reservation
+    queryset = Reservation.objects.order_by('-Date')
+    template_name = 'view_reservation.html'
+```
+
+## Setting up the urls.py
+
+```python
+from . import views
+from django.urls import path
+
+urlpatterns = [
+    path('', views.Reserv_table, name='reserve_table'),
+    path('view_reservation/', views.ReservationList.as_view(),
+         name='view_reservation')
+]
+```
+
+## Setting up the html page
+Create a new file
+
+```
+view_reservation.html
+```
+
+Within that file add this
+
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center color-main mt-5">View Reservations</h1>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <!-- reservation_list is the imported model added _list to it -->
+        {% for reservation in reservation_list %}
+        <div class="col-md-4 mt-3 color-main text-center">
+            {{ reservation.name }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+```

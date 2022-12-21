@@ -3,16 +3,18 @@
 
 <div class="container">
     <div class="row">
+        
         <!-- For loop for item_list -->
         {% for item in item_list %}
+        <div class="col-4">
             {% include 'card.html' %}
 
         <!-- If divisable by 12 it changes the page -->
         {% if forloop.counter|divisibleby:12 %}
-        <div class="col">
+        
             {% endif %}
-            {% endfor %}
         </div>
+            {% endfor %}
     </div>
     <!-- If more then 12 cards exists paginate them -->
     {% if is_paginated %}
