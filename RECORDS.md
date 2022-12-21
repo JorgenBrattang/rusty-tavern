@@ -3223,3 +3223,24 @@ git commit -m "redesign template for menu, view_reservation and item_detail"
 ```
 git push
 ```
+
+# Couldn't deploy to Heroku
+## Issue found
+Missed to update the requirements.txt
+```
+pip3 freeze --local > requirements.txt
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "freeze requirements.txt"
+```
+
+```
+git push
+```
