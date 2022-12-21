@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{{ form.media }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-5">
+            <h1 class="text-center color-main">Reservation</h1>
+            <form method="POST" class="color-main">
+                {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-success px-5">Update Reservation</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -5,10 +5,30 @@
 <h1 class="text-center color-main mt-5">View Reservations</h1>
 
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row">
         {% for reservation in reservation_list %}
-        <div class="col-md-4 mt-3 color-main text-center">
-            {{ reservation.name }}
+
+        <div class="col-md-3 mt-3">
+            <ul class="list-unstyled">
+                <li>Name: {{ reservation.name }}</li>
+                <li>Email: {{ reservation.email }}</li>
+                <li>Phone: {{ reservation.phone }}</li>
+                <li>Number of persons: {{ reservation.number_of_persons }}</li>
+                <li>Date: {{ reservation.Date }}</li>
+                <li>Time: {{ reservation.time }}</li>
+                <li class="mt-2">
+                    <div class="row">
+                        <a href="../edit/{{ reservation.pk }}">
+                            <button class="btn btn-success px-5">Edit</button>
+                        </a>
+                    </div>
+                    <div class="row mt-2">
+                        <a href="../delete/{{ reservation.pk }}">
+                            <button class="btn btn-danger px-5">Delete</button>
+                        </a>
+                    </div>
+                </li>
+            </ul>
         </div>
         {% endfor %}
     </div>

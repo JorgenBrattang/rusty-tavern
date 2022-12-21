@@ -2655,7 +2655,7 @@ from .forms import ReserveTableForm
 
 class ReservationList(generic.ListView):
     model = Reservation
-    queryset = Reservation.objects.order_by('-Date')
+    queryset = Reservation.objects.order_by('Date')
     template_name = 'view_reservation.html'
 ```
 
@@ -2690,7 +2690,7 @@ Within that file add this
 
 <div class="container">
     <div class="row justify-content-center">
-        <!-- reservation_list is the imported model added _list to it -->
+        <!-- reservation_list is the imported model Reservation added _list to it -->
         {% for reservation in reservation_list %}
         <div class="col-md-4 mt-3 color-main text-center">
             {{ reservation.name }}
@@ -2700,4 +2700,231 @@ Within that file add this
 </div>
 
 {% endblock %}
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Add view reservations html plus code to show it."
+```
+
+```
+git push
+```
+
+# Edit and delete reservations, plus renaming files and class etc...
+## Renaming files and adding files
+
+```
+add_reservation.html
+edit_reservation.html
+view_reservation.html
+```
+
+## urls.py (reservation)
+```python
+from . import views
+from django.urls import path
+
+urlpatterns = [
+    path('', views.add_reservation,
+         name='add_reservation'),
+    path('view/', views.ReservationList.as_view(),
+         name='view_reservation'),
+    path('edit/<pk>', views.edit_reservation,
+         name='edit_reservation'),
+    path('delete/<pk>', views.delete_reservation,
+         name='delete_reservation'),
+]
+```
+
+## views.py (reservation)
+
+```python
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404, reverse
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+from django.views import generic, View
+from .models import Reservation
+from .forms import ReserveTableForm
+
+
+class ReservationList(generic.ListView):
+    model = Reservation
+    queryset = Reservation.objects.order_by('Date')
+    template_name = 'view_reservation.html'
+
+
+def add_reservation(request):
+    form = ReserveTableForm()
+
+    if request.method == 'POST':
+        form = ReserveTableForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            context = {
+                'form': form,
+                'reserved': True,
+            }
+
+    if request.method == 'GET':
+        context = {
+            'form': form,
+            'reserved': False,
+        }
+
+    return render(request, 'add_reservation.html', context)
+
+
+def edit_reservation(request, pk):
+    reservation = get_object_or_404(Reservation, id=pk)
+    form = ReserveTableForm(instance=reservation)
+    if request.method == 'POST':
+        form = ReserveTableForm(request.POST, instance=reservation)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('view_reservation'))
+
+    if request.method == 'GET':
+        context = {
+                    'form': form
+                }
+    return render(request, 'edit_reservation.html', context)
+
+
+def delete_reservation(request, pk):
+    reservation = get_object_or_404(Reservation, id=pk)
+    reservation.delete()
+    return HttpResponseRedirect(reverse('view_reservation'))
+```
+
+## Navigation in base.html
+```html
+<!-- Navigation -->
+<nav class="navbar justify-content-center mt-5">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link {% if '/' == request.path %}active{% endif %}" href="{% url 'home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/menu/' == request.path %}active{% endif %}"
+                href="{% url 'menu' %}">Menu</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/reserve_table/' == request.path %}active{% endif %}"
+                href="{% url 'add_reservation' %}">Reservation</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link {% if '/reserve_table/view_reservation' == request.path %}active{% endif %}"
+                href="{% url 'view_reservation' %}">View Reservations</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/accounts/logout/' == request.path %}active{% endif %}"
+                href="{% url 'account_logout' %}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link {% if '/accounts/signup/' == request.path %}active{% endif %}"
+                href="{% url 'account_signup' %}">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/accounts/login/' == request.path %}active{% endif %}"
+                href="{% url 'account_login' %}">Login</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+```
+
+## view_reservation.html
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center color-main mt-5">View Reservations</h1>
+
+<div class="container">
+    <div class="row">
+        {% for reservation in reservation_list %}
+
+        <div class="col-md-3 mt-3">
+            <ul class="list-unstyled">
+                <li>Name: {{ reservation.name }}</li>
+                <li>Email: {{ reservation.email }}</li>
+                <li>Phone: {{ reservation.phone }}</li>
+                <li>Number of persons: {{ reservation.number_of_persons }}</li>
+                <li>Date: {{ reservation.Date }}</li>
+                <li>Time: {{ reservation.time }}</li>
+                <li class="mt-2">
+                    <div class="row">
+                        <a href="../edit/{{ reservation.pk }}">
+                            <button class="btn btn-success px-5">Edit</button>
+                        </a>
+                    </div>
+                    <div class="row mt-2">
+                        <a href="../delete/{{ reservation.pk }}">
+                            <button class="btn btn-danger px-5">Delete</button>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+```
+
+## edit_reservation.html
+```html
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{{ form.media }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-5">
+            <h1 class="text-center color-main">Reservation</h1>
+            <form method="POST" class="color-main">
+                {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-success px-5">Update Reservation</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+```
+
+## urls.py (rustytavern)
+```python
+path('reservation/', include(
+        'reservation.urls'), name='reservation.urls'),
+```
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Add edit and delete to reservation and renaming files and classes"
+```
+
+```
+git push
 ```
