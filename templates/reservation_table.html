@@ -1,0 +1,19 @@
+<tr class="align-middle">
+    <th scope="row">{{ reservation.Date}}</th>
+    <td>{{ reservation.name }}</td>
+    <td>{{ reservation.email }}</td>
+    <td>{{ reservation.phone }}</td>
+    <td>{{ reservation.table_for }}</td>
+    <td>{{ reservation.Date }}</td>
+    <td>{{ reservation.time }}</td>
+    <td>
+        <a href="../edit/{{ reservation.pk }}">
+            <button class="btn btn-success">Edit</button>
+        </a>
+    </td>
+    <td>
+        <a href="../delete/{{ reservation.pk }}">
+            <button class="btn btn-danger">Delete</button>
+        </a>
+    </td>
+</tr>

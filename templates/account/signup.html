@@ -11,14 +11,14 @@
     <div class="col-md-4 mt-5">
       <h1 class="color-main text-center">{% trans "Sign Up" %}</h1>
 
-      <p class="text-center">{% blocktrans %}When you sign up you can make reservations and review the meal, to help
+      <p class="text-center color-white">{% blocktrans %}When you sign up you can make reservations and review the meal, to help
         others read about your experiance and help us improve our service.</p>
 
-      <p class="text-center"> If you already have an
+      <p class="text-center color-white"> If you already have an
         account? Then please <a class="color-main" href="{{ login_url }}">sign in</a>.{% endblocktrans %}
       </p>
 
-      <form class="signup color-main" id="signup_form" method="post" action="{% url 'account_signup' %}">
+      <form class="signup color-white" id="signup_form" method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
         {{ form|crispy }}
         {% if redirect_field_value %}

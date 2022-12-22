@@ -3,6 +3,7 @@
 {% block content %}
 
 <h1 class="text-center color-main mt-5">View Reservations</h1>
+<h4 class="text-center color-white">{{ user.username }}</h4>
 
 <div class="container mt-3">
     <div class="row">
@@ -24,25 +25,13 @@
                     </thead>
                     <tbody>
                         {% for reservation in reservation_list %}
-                        <tr class="align-middle">
-                            <th scope="row">{{ reservation.Date}}</th>
-                            <td>{{ reservation.name }}</td>
-                            <td>{{ reservation.email }}</td>
-                            <td>{{ reservation.phone }}</td>
-                            <td>{{ reservation.table_for }}</td>
-                            <td>{{ reservation.Date }}</td>
-                            <td>{{ reservation.time }}</td>
-                            <td>
-                                <a href="../edit/{{ reservation.pk }}">
-                                    <button class="btn btn-success">Edit</button>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="../delete/{{ reservation.pk }}">
-                                    <button class="btn btn-danger">Delete</button>
-                                </a>
-                            </td>
-                        </tr>
+                            {% if user.is_staff %}
+                                {% include 'reservation_table.html' %}
+                            {% else %}
+                                {% if reservation.name == user.username %}
+                                    {% include 'reservation_table.html' %}
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>

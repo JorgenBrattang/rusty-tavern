@@ -3244,3 +3244,93 @@ git commit -m "freeze requirements.txt"
 ```
 git push
 ```
+
+# Reservation only views
+## Admin and only the creator view
+Now we can view the reservation made by the user and the staff, the staff can see all the servations and the user can only see their own creation.
+
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center color-main mt-5">View Reservations</h1>
+<h4 class="text-center color-white">{{ user.username }}</h4>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Table for</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservation_list %}
+                            {% if user.is_staff %}
+                                {% include 'reservation_table.html' %}
+                            {% else %}
+                                {% if reservation.name == user.username %}
+                                    {% include 'reservation_table.html' %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+```
+
+## (DRY) To gain easier control of reservation table
+I created a reservation_table.html file so it's included instead of repeating
+```html
+<tr class="align-middle">
+    <th scope="row">{{ reservation.Date}}</th>
+    <td>{{ reservation.name }}</td>
+    <td>{{ reservation.email }}</td>
+    <td>{{ reservation.phone }}</td>
+    <td>{{ reservation.table_for }}</td>
+    <td>{{ reservation.Date }}</td>
+    <td>{{ reservation.time }}</td>
+    <td>
+        <a href="../edit/{{ reservation.pk }}">
+            <button class="btn btn-success">Edit</button>
+        </a>
+    </td>
+    <td>
+        <a href="../delete/{{ reservation.pk }}">
+            <button class="btn btn-danger">Delete</button>
+        </a>
+    </td>
+</tr>
+```
+
+Now I need to figure out how to implement prefill data so it's the username that's always entered when making reservations so it will it can't be changed and to mess up the code. And the key to that is somewhere inside when you create a review for a item.
+
+## Commit the changes
+
+```
+git add .
+```
+
+```
+git commit -m "Add authorize view on reservations and Add reservation_table.html"
+```
+
+```
+git push
+```

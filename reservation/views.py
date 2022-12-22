@@ -18,6 +18,7 @@ def add_reservation(request):
 
     if request.method == 'POST':
         form = ReserveTableForm(request.POST)
+
         if form.is_valid():
             form.save()
 

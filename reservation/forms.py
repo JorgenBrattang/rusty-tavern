@@ -1,7 +1,7 @@
 from .models import Reservation
 from django import forms
 from django.forms import DateInput
-from django_flatpickr.widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
+from django_flatpickr.widgets import DatePickerInput
 import datetime
 
 INTERVALS = [
@@ -14,7 +14,7 @@ INTERVALS = [
 class ReserveTableForm(forms.ModelForm):
     class Meta:
         model = Reservation
-        fields = ('__all__')
+        fields = ('name', 'phone', 'table_for', 'Date', 'time')
         widgets = {
             'Date': DatePickerInput(),
             'time': forms.Select(choices=INTERVALS)
